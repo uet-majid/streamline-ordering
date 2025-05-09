@@ -1,0 +1,97 @@
+{% extends 'admin_base.html' %} {% load static %} {% block title %}Edit Category
+- Admin Panel{% endblock %} {% block content %}
+<!-- START PAGE CONTENT-->
+<div class="row common-form">
+  <div class="col-md-6">
+    <div class="ibox">
+      <div class="ibox-head">
+        <div class="ibox-title">Edit Category</div>
+      </div>
+      <div class="ibox-body">
+        <form class="form-horizontal" id="edit-category-form">
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+              <input
+                class="form-control"
+                type="text"
+                name="name"
+                value="Bakery Items"
+                placeholder="Category name"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Description</label>
+            <div class="col-sm-10">
+              <textarea
+                class="form-control"
+                name="description"
+                placeholder="Category description"
+                rows="3"
+              >
+Fresh breads, cakes, and pastries</textarea
+              >
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-10 ml-sm-auto">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="is_active"
+                  id="is_active"
+                  checked
+                />
+                <label class="form-check-label" for="is_active">
+                  Active Category
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-10 ml-sm-auto">
+              <button class="btn btn-primary" type="submit">
+                <i class="fa fa-save"></i>&nbsp;&nbsp;Update Category
+              </button>
+              <a href="{% url 'categories' %}" class="btn btn-default">
+                <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Cancel
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END PAGE CONTENT-->
+{% endblock %} {% block page_scripts %}
+<script>
+  $(document).ready(function () {
+    // Form validation
+    $("#edit-category-form").validate({
+      rules: {
+        name: {
+          required: true,
+          minlength: 3,
+        },
+      },
+      messages: {
+        name: {
+          required: "Please enter category name",
+          minlength: "Category name must be at least 3 characters",
+        },
+      },
+      errorClass: "help-block error",
+      highlight: function (element) {
+        $(element).closest(".form-group").addClass("has-error");
+      },
+      unhighlight: function (element) {
+        $(element).closest(".form-group").removeClass("has-error");
+      },
+    });
+  });
+</script>
+{% endblock %}

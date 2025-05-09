@@ -1,0 +1,58 @@
+{% extends 'base.html' %} {% load static %} {% block title %}My Profile - The
+Cookie Barrel{% endblock %} {% block content %}
+<!-- breadcrumb -->
+<div class="breadcrumb-section breadcrumb-bg">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2 text-center">
+        <div class="breadcrumb-text">
+          <p>Your Account</p>
+          <h1>Profile</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- profile section -->
+<div class="container mt-5 mb-5">
+  <div class="row">
+    <div class="col-lg-8 offset-lg-2 p-4 shadow-sm border rounded">
+      <h3 class="mb-4 text-center">My Profile</h3>
+      <table class="table table-bordered">
+        <tr>
+          <th>Full Name</th>
+          <td>Majid Hussain</td>
+        </tr>
+        <tr>
+          <th>Email</th>
+          <td>majid.it07@gmail.com</td>
+        </tr>
+        <tr>
+          <th>Phone</th>
+          <td>03143051005</td>
+        </tr>
+        <tr>
+          <th>Address</th>
+          <td>Lahore</td>
+        </tr>
+        <tr>
+          <th>Verified</th>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <th>Registered At</th>
+          <td>23-April-2025</td>
+        </tr>
+      </table>
+
+      <div class="d-flex justify-content-between mt-4">
+        <a href="{% url 'edit_profile' %}" class="boxed-btn">Edit Profile</a>
+        <a href="{% url 'change_password' %}" class="boxed-btn"
+          >Change Password</a
+        >
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

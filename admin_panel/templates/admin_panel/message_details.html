@@ -1,0 +1,154 @@
+{% extends 'admin_base.html' %} {% load static %} {% block title %}Contact
+Message - Admin Panel{% endblock %} {% block content %}
+<!-- START PAGE CONTENT-->
+<div class="row common-form">
+  <div class="col-lg-8">
+    <div class="ibox">
+      <div
+        class="ibox-head"
+        style="background-color: #f8f9fa; border-bottom: 1px solid #e4e5e6"
+      >
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3 class="ibox-title mb-0" style="color: #3498db">
+              <i class="fa fa-envelope mr-2"></i>Subject: Need help to signup
+            </h3>
+          </div>
+        </div>
+        <div class="ibox-tools">
+          <a href="{% url 'contact_messages' %}" class="btn btn-default btn-sm">
+            <i class="fa fa-arrow-left"></i> Back to Messages
+          </a>
+        </div>
+      </div>
+      <div class="ibox-body" style="padding: 25px">
+        <!-- Message Header -->
+        <div class="message-header bg-light p-4 rounded mb-4">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="d-flex align-items-center mb-3">
+                <div>
+                  <h5 class="mb-0">Majid Hussain</h5>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="message-meta">
+                <div class="d-flex mb-2">
+                  <i
+                    class="fa fa-phone mt-1 mr-2"
+                    style="width: 20px; color: #7f8c8d"
+                  ></i>
+                  <span>+92 300 1234567</span>
+                </div>
+                <div class="d-flex mb-2">
+                  <i
+                    class="fa fa-envelope mt-1 mr-2"
+                    style="width: 20px; color: #7f8c8d"
+                  ></i>
+                  <span>majid@example.com</span>
+                </div>
+                <div class="d-flex">
+                  <i
+                    class="fa fa-clock-o mt-1 mr-2"
+                    style="width: 20px; color: #7f8c8d"
+                  ></i>
+                  <span>23 Apr 2025, 10:30 AM</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message Content -->
+        <div
+          class="message-content p-4 mb-4"
+          style="
+            background-color: #f8f9fa;
+            border-left: 4px solid #3498db;
+            border-radius: 0 4px 4px 0;
+          "
+        >
+          <h5 class="mb-3" style="color: #2c3e50">
+            <i class="fa fa-comment mr-2"></i>Message
+          </h5>
+          <div class="message-text p-3 bg-white rounded">
+            <p class="mb-0">
+              Hi, I want to signup on cookie barrel but getting error when
+              submitting the registration form. The error says "Email already
+              exists" but this is my first time signing up. Please help me
+              resolve this issue.
+            </p>
+          </div>
+        </div>
+
+        <!-- Response Section -->
+        <div
+          class="response-section p-4"
+          style="background-color: #f8f9fa; border-radius: 4px"
+        >
+          <h5 class="mb-3" style="color: #2c3e50">
+            <i class="fa fa-reply mr-2"></i>Response
+          </h5>
+          <form>
+            <div class="form-group">
+              <textarea
+                class="form-control"
+                rows="4"
+                placeholder="Type your response here..."
+              ></textarea>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa fa-paper-plane"></i> &nbsp;Send Response
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END PAGE CONTENT-->
+{% endblock %} {% block page_scripts %}
+<style>
+  .avatar-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #3498db;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .timeline {
+    position: relative;
+    padding-left: 30px;
+  }
+  .timeline-item {
+    position: relative;
+    padding-bottom: 20px;
+  }
+  .timeline-point {
+    position: absolute;
+    left: -15px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .timeline-event {
+    padding-left: 20px;
+  }
+  .timeline-content {
+    border-left: 2px solid #eee;
+    padding-left: 15px;
+  }
+</style>
+{% endblock %}

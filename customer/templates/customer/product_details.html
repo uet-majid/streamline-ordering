@@ -1,0 +1,119 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Product Details -
+The Cookie Barrel{% endblock %} {% block content %}
+
+<!-- breadcrumb-section -->
+<div class="breadcrumb-section breadcrumb-bg">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2 text-center">
+        <div class="breadcrumb-text">
+          <p>See More Details</p>
+          <h1>Deluxe Cookie Box</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- single product -->
+<div class="single-product mt-150 mb-150">
+  <div class="container">
+    <div class="row p-4 shadow-sm border rounded">
+      <div class="col-md-5">
+        <div class="single-product-img">
+          <img
+            src="{% static 'customer/img/products/gift-box-2.jpg' %}"
+            alt=""
+          />
+        </div>
+      </div>
+      <div class="col-md-7">
+        <div class="single-product-content">
+          <h3>Deluxe Cookie Box</h3>
+          <p class="single-product-pricing"><span>Per Box</span> $950</p>
+          <p>
+            Deluxe Cookie Box offers a rich assortment of our finest cookies,
+            freshly baked to perfection. Perfect for gifting, celebrations, or
+            indulging yourself with a variety of classic flavors. Every bite
+            promises homemade goodness and premium quality.
+          </p>
+          <div class="single-product-form">
+            <form action="#">
+              <input type="number" placeholder="1" min="1" />
+            </form>
+            <a href="{% url 'cart' %}" class="cart-btn"
+              ><i class="fas fa-shopping-cart"></i> Add to Cart</a
+            >
+            <p><strong>Categories:</strong> Gift Box</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- more products -->
+<div class="more-products mb-150">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2 text-center">
+        <div class="section-title">
+          <h3><span class="orange-text">Related</span> Products</h3>
+          <p>More cookies and sweet treats you might like!</p>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-4 col-md-6 text-center">
+        <div class="single-product-item">
+          <div class="product-image">
+            <a href="#"
+              ><img
+                src="{% static 'customer/img/products/gift-box-1.jpg' %}"
+                alt=""
+            /></a>
+          </div>
+          <h3>Mini Cookie Gift Box</h3>
+          <p class="product-price"><span>Per Box</span> $550</p>
+          <a href="{% url 'cart' %}" class="cart-btn"
+            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
+          >
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 text-center">
+        <div class="single-product-item">
+          <div class="product-image">
+            <a href="#"
+              ><img
+                src="{% static 'customer/img/products/cookies_1.jpg' %}"
+                alt=""
+            /></a>
+          </div>
+          <h3>Chocolate Chip Cookies</h3>
+          <p class="product-price"><span>Per Box</span> $300</p>
+          <a href="{% url 'cart' %}" class="cart-btn"
+            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
+          >
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 text-center">
+        <div class="single-product-item">
+          <div class="product-image">
+            <a href="#"
+              ><img
+                src="{% static 'customer/img/products/brownies_1.jpg' %}"
+                alt=""
+            /></a>
+          </div>
+          <h3>Fudge Brownie</h3>
+          <p class="product-price"><span>Per Slice</span> $150</p>
+          <a href="{% url 'cart' %}" class="cart-btn"
+            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

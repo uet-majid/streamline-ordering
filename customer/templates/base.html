@@ -1,0 +1,241 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{% block title %}The Cookie Barrel{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="{% static 'customer/img/Favicon cookie barrel.png' %}"
+    />
+    <!-- google font -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Poppins:400,700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{% static 'customer/css/all.min.css' %}" />
+    <link
+      rel="stylesheet"
+      href="{% static 'customer/bootstrap/css/bootstrap.min.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'customer/css/owl.carousel.css' %}"
+    />
+    <link
+      rel="stylesheet"
+      href="{% static 'customer/css/magnific-popup.css' %}"
+    />
+    <link rel="stylesheet" href="{% static 'customer/css/animate.css' %}" />
+    <link
+      rel="stylesheet"
+      href="{% static 'customer/css/meanmenu.min.css' %}"
+    />
+    <link rel="stylesheet" href="{% static 'customer/css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'customer/css/responsive.css' %}" />
+  </head>
+  <body>
+    <!--PreLoader-->
+    <div class="loader">
+      <div class="loader-inner">
+        <div class="circle"></div>
+      </div>
+    </div>
+    <!--PreLoader Ends-->
+
+    <!-- HEADER START -->
+    <div class="top-header-area" id="sticker">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 col-sm-12 text-center">
+            <div class="main-menu-wrap">
+              <!-- Logo -->
+              <div class="site-logo">
+                <a href="{% url 'home' %}">
+                  <img
+                    src="{% static 'customer/img/logo v1.png' %}"
+                    alt="The Cookie Barrel"
+                  />
+                </a>
+              </div>
+
+              <!-- Menu -->
+              <nav class="main-menu">
+                <ul>
+                  <li class="current-list-item">
+                    <a href="{% url 'home' %}">Home</a>
+                  </li>
+
+                  <!-- Categories Dropdown -->
+                  <li>
+                    <a href="#">Categories</a>
+                    <ul class="sub-menu">
+                      <li>
+                        <a href="{% url 'category_products' %}">Cookies</a>
+                      </li>
+                      <li>
+                        <a href="#">Brownies</a>
+                      </li>
+                      <li>
+                        <a href="#">Gift Boxes</a>
+                      </li>
+                    </ul>
+                  </li>
+
+                  <li><a href="{% url 'products' %}">Products</a></li>
+                  <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                  <li><a href="{% url 'about' %}">About Us</a></li>
+                  <li><a href="{% url 'my_orders' %}">My Orders</a></li>
+                  <!-- <li><a href="#">Logout</a></li> -->
+                  <li><a href="{% url 'login' %}">Login</a></li>
+                  <li><a href="{% url 'signup' %}">Register</a></li>
+                  <li><a href="{% url 'profile' %}">My Profile</a></li>
+
+                  <li>
+                    <div class="header-icons">
+                      <a class="shopping-cart" href="{% url 'cart' %}"
+                        ><i class="fas fa-shopping-cart"></i
+                      ></a>
+                      <a class="mobile-hide search-bar-icon" href="#"
+                        ><i class="fas fa-search"></i
+                      ></a>
+                    </div>
+                  </li>
+                </ul>
+              </nav>
+
+              <a class="mobile-show search-bar-icon" href="#"
+                ><i class="fas fa-search"></i
+              ></a>
+              <div class="mobile-menu"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- HEADER END -->
+
+    <!-- SEARCH BAR -->
+    <div class="search-area">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+            <span class="close-btn"><i class="fas fa-window-close"></i></span>
+            <div class="search-bar">
+              <div class="search-bar-tablecell">
+                <h3>Search For:</h3>
+                <input type="text" placeholder="Keywords" />
+                <button type="submit">
+                  Search <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE CONTENT START -->
+    {% block content %} {% endblock %}
+    <!-- PAGE CONTENT END -->
+
+    <!-- FOOTER START -->
+    <div class="footer-area">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-3 col-md-6">
+            <div class="footer-box about-widget">
+              <h2 class="widget-title">About Us</h2>
+              <p>
+                At The Cookie Barrel, we craft fresh, handmade cookies with love
+                and premium ingredients. Our passion is to deliver unforgettable
+                taste in every bite you enjoy.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="footer-box get-in-touch">
+              <h2 class="widget-title">Get in Touch</h2>
+              <ul>
+                <li>Example Street, City</li>
+                <li>info@example.com</li>
+                <li>+92 300 1234567</li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="footer-box pages">
+              <h2 class="widget-title">Pages</h2>
+              <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'products' %}">Products</a></li>
+                <li><a href="{% url 'cart' %}">Cart</a></li>
+                <li><a href="{% url 'about' %}">About Us</a></li>
+                <li><a href="{% url 'contact' %}">Contact Us</a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="footer-box">
+              <h2 class="widget-title">Opening Hours</h2>
+              <ul>
+                <li>Monday – Friday: 9:00 – 22:00</li>
+                <li>Saturday - Sunday: 10:00 – 23:00</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- FOOTER END -->
+
+    <!-- copyright -->
+    <div class="copyright">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 col-md-12">
+            <p>Copyrights &copy; 2025 - All Rights Reserved.<br /></p>
+          </div>
+          <div class="col-lg-6 text-right col-md-12">
+            <p>
+              <a href="{% url 'terms_conditions' %}">Terms & Conditions</a> |
+              <a href="{% url 'privacy_policy' %}">Privacy Policy</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end copyright -->
+
+    <!-- SCRIPTS -->
+    <script src="{% static 'customer/js/jquery-1.11.3.min.js' %}"></script>
+    <script src="{% static 'customer/bootstrap/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'customer/js/jquery.countdown.js' %}"></script>
+    <script src="{% static 'customer/js/jquery.isotope-3.0.6.min.js' %}"></script>
+    <script src="{% static 'customer/js/waypoints.js' %}"></script>
+    <script src="{% static 'customer/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'customer/js/jquery.magnific-popup.min.js' %}"></script>
+    <script src="{% static 'customer/js/jquery.meanmenu.min.js' %}"></script>
+    <script src="{% static 'customer/js/sticker.js' %}"></script>
+    <script src="{% static 'customer/js/form-validate.js' %}"></script>
+    <script src="{% static 'customer/js/main.js' %}"></script>
+    <script>
+      $(document).ready(function () {
+        $("input[name='payment_method']").on("change", function () {
+          if ($("#payment_method_stripe").is(":checked")) {
+            $("#stripe-card-fields").slideDown();
+          } else {
+            $("#stripe-card-fields").slideUp();
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

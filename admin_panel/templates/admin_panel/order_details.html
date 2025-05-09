@@ -1,0 +1,146 @@
+{% extends 'admin_base.html' %} {% load static %} {% block title %}Order Details
+- Admin Panel{% endblock %} {% block content %}
+<!-- START PAGE CONTENT-->
+<div class="row common-form">
+  <div class="col-lg-8">
+    <div class="ibox">
+      <div class="ibox-head">
+        <div class="ibox-title">Order #12345 Details</div>
+        <div class="ibox-tools">
+          <a href="{% url 'orders' %}" class="btn btn-default btn-sm">
+            <i class="fa fa-arrow-left"></i> Back to Orders
+          </a>
+        </div>
+      </div>
+      <div class="ibox-body">
+        <!-- Order Summary -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h5>Customer Information</h5>
+            <p>
+              <strong>Name:</strong> Majid Hussain<br />
+              <strong>Phone:</strong> +92 300 1234567<br />
+              <strong>Email:</strong> majid@example.com<br />
+              <strong>Shipping Address:</strong> UOL Lahore, Punjab, Pakistan
+            </p>
+          </div>
+          <div class="col-md-6">
+            <h5>Order Information</h5>
+            <p>
+              <strong>Order Date:</strong> 23 Apr 2025<br />
+              <strong>Order Status:</strong>
+              <span class="badge badge-warning">Pending</span><br />
+              <strong>Payment Status:</strong>
+              <span class="badge badge-success">Paid</span><br />
+              <strong>Payment Method:</strong> Credit Card<br />
+              <strong>WhatsApp Sent:</strong>
+              <i class="fa fa-check text-success"></i>
+            </p>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div class="table-responsive mb-4">
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img
+                      src="{% static 'admin/img/products/coffee.jpg' %}"
+                      width="50"
+                      class="img-thumbnail mr-3"
+                    />
+                    <div>Premium Coffee</div>
+                  </div>
+                </td>
+                <td>$4.99</td>
+                <td>2</td>
+                <td>$9.98</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <img
+                      src="{% static 'admin/img/products/bread.jpg' %}"
+                      width="50"
+                      class="img-thumbnail mr-3"
+                    />
+                    <div>Whole Wheat Bread</div>
+                  </div>
+                </td>
+                <td>$2.99</td>
+                <td>3</td>
+                <td>$8.97</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th colspan="4" class="text-right">Subtotal:</th>
+                <th>$18.95</th>
+              </tr>
+              <tr>
+                <th colspan="4" class="text-right">Shipping:</th>
+                <th>$2.00</th>
+              </tr>
+              <tr>
+                <th colspan="4" class="text-right">Total:</th>
+                <th>$20.95</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Order Actions -->
+        <div class="border-top pt-3 common-form">
+          <div class="btn-group">
+            <button class="btn btn-info">
+              <i class="fa fa-home"></i> Mark as Delivered
+            </button>
+            <button class="btn btn-danger">
+              <i class="fa fa-times"></i> Cancel Order
+            </button>
+            <button class="btn btn-warning">
+              <i class="fa fa-whatsapp"></i> Resend WhatsApp Notification
+            </button>
+            <button class="btn btn-secondary">
+              <i class="fa fa-print"></i> Print Invoice
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END PAGE CONTENT-->
+{% endblock %} {% block page_scripts %}
+<script>
+  $(document).ready(function () {
+    // Status update buttons
+    $(".btn-info").click(function () {
+      if (confirm("Mark this order as delivered?")) {
+        alert(
+          "Order status would be updated to delivered (backend implementation needed)"
+        );
+      }
+    });
+
+    $(".btn-danger").click(function () {
+      if (confirm("Cancel this order?")) {
+        alert("Order would be canceled (backend implementation needed)");
+      }
+    });
+  });
+</script>
+{% endblock %}

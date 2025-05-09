@@ -1,0 +1,233 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width initial-scale=1.0" />
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="{% static 'customer/img/Favicon cookie barrel.png' %}"
+    />
+    <link
+      href="{% static 'admin/bootstrap/css/bootstrap.min.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="{% static 'admin/font-awesome/css/font-awesome.min.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="{% static 'admin/themify-icons/css/themify-icons.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="{% static 'admin/jvectormap/jquery-jvectormap-2.0.3.css' %}"
+      rel="stylesheet"
+    />
+    <link
+      href="{% static 'admin/DataTables/datatables.min.css' %}"
+      rel="stylesheet"
+    />
+    <link href="{% static 'admin/css/main.min.css' %}" rel="stylesheet" />
+    {% block page_styles %}{% endblock %}
+  </head>
+
+  <body class="fixed-navbar">
+    <div class="page-wrapper">
+      <!-- START HEADER-->
+      <header class="header">
+        <div class="page-brand">
+          <a class="link" href="{% url 'dashboard' %}">
+            <span class="brand">
+              <img
+                src="{% static 'customer/img/logo v1.png' %}"
+                alt="The Cookie Barrel"
+              />
+            </span>
+            <span class="brand-mini">
+              <img
+                src="{% static 'customer/img/Favicon cookie barrel.png' %}"
+                alt="CB"
+              />
+            </span>
+          </a>
+        </div>
+        <div class="flexbox flex-1">
+          <!-- START TOP-LEFT TOOLBAR-->
+          <ul class="nav navbar-toolbar">
+            <li>
+              <a class="nav-link sidebar-toggler js-sidebar-toggler"
+                ><i class="ti-menu"></i
+              ></a>
+            </li>
+          </ul>
+          <!-- END TOP-LEFT TOOLBAR-->
+          <!-- START TOP-RIGHT TOOLBAR-->
+          <ul class="nav navbar-toolbar">
+            <li class="dropdown dropdown-user">
+              <a class="nav-link dropdown-toggle link" data-toggle="dropdown">
+                <img src="{% static 'admin/img/admin-avatar.png' %}" />
+                <span></span>Majid Hussain<i class="fa fa-angle-down m-l-5"></i
+              ></a>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item" href="#"
+                  ><i class="fa fa-power-off"></i>Logout</a
+                >
+              </ul>
+            </li>
+          </ul>
+          <!-- END TOP-RIGHT TOOLBAR-->
+        </div>
+      </header>
+      <!-- END HEADER-->
+
+      <!-- START SIDEBAR-->
+      <nav class="page-sidebar" id="sidebar">
+        <div id="sidebar-collapse">
+          <div class="admin-block d-flex">
+            <div>
+              <img
+                src="{% static 'admin/img/admin-avatar.png' %}"
+                width="45px"
+              />
+            </div>
+            <div class="admin-info">
+              <div class="font-strong">Majid Hussain</div>
+              <small>Admin</small>
+            </div>
+          </div>
+          <ul class="side-menu metismenu">
+            <li>
+              <a
+                class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                href="{% url 'dashboard' %}"
+              >
+                <i class="sidebar-item-icon fa fa-th-large"></i>
+                <span class="nav-label">Dashboard</span>
+              </a>
+            </li>
+            <li>
+              <a href="javascript:;"
+                ><i class="sidebar-item-icon fa fa-list"></i>
+                <span class="nav-label">Manage Categories</span
+                ><i class="fa fa-angle-left arrow"></i
+              ></a>
+              <ul class="nav-2-level collapse">
+                <li>
+                  <a href="{% url 'add_category' %}">Add Category</a>
+                </li>
+                <li>
+                  <a href="{% url 'categories' %}">View Categories</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a href="javascript:;"
+                ><i class="sidebar-item-icon fa fa-product-hunt"></i>
+                <span class="nav-label">Manage Products</span
+                ><i class="fa fa-angle-left arrow"></i
+              ></a>
+              <ul class="nav-2-level collapse">
+                <li>
+                  <a href="{% url 'add_product' %}">Add Product</a>
+                </li>
+                <li>
+                  <a href="{% url 'admin-products' %}">View Products</a>
+                </li>
+              </ul>
+            </li>
+            <li>
+              <a href="{% url 'orders' %}"
+                ><i class="sidebar-item-icon fa fa-clipboard"></i>
+                <span class="nav-label">View Orders</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'reports' %}"
+                ><i class="sidebar-item-icon fa fa-file-pdf-o"></i>
+                <span class="nav-label">Generate Reports</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'customers' %}"
+                ><i class="sidebar-item-icon fa fa-users"></i>
+                <span class="nav-label">View Customers</span>
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'contact_messages' %}"
+                ><i class="sidebar-item-icon fa fa-envelope-o"></i>
+                <span class="nav-label">Contact Messages</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- END SIDEBAR-->
+
+      <div class="content-wrapper">
+        <!-- START PAGE CONTENT-->
+        <div class="page-content fade-in-up">
+          {% block content %}{% endblock %}
+        </div>
+        <!-- END PAGE CONTENT-->
+        <footer class="page-footer">
+          <div class="font-13 text-center">
+            {% now "Y" %} © <b>The Cookie Barrel</b> - All rights reserved.
+          </div>
+          <div class="to-top"><i class="fa fa-angle-double-up"></i></div>
+        </footer>
+      </div>
+    </div>
+
+    <!-- BEGIN PAGA BACKDROPS-->
+    <div class="sidenav-backdrop backdrop"></div>
+    <div class="preloader-backdrop">
+      <div class="page-preloader">Loading</div>
+    </div>
+    <!-- END PAGA BACKDROPS-->
+    <script
+      src="{% static 'admin/jquery/dist/jquery.min.js' %}"
+      type="text/javascript"
+    ></script>
+    <script
+      src="{% static 'admin/popper/dist/umd/popper.min.js' %}"
+      type="text/javascript"
+    ></script>
+    <script
+      src="{% static 'admin/bootstrap/js/bootstrap.min.js' %}"
+      type="text/javascript"
+    ></script>
+    <script
+      src="{% static 'admin/metisMenu/dist/metisMenu.min.js' %}"
+      type="text/javascript"
+    ></script>
+    <script
+      src="{% static 'admin/jquery-slimscroll/jquery.slimscroll.min.js' %}"
+      type="text/javascript"
+    ></script>
+    <script
+      src="{% static 'admin/js/app.min.js' %}"
+      type="text/javascript"
+    ></script>
+    <script
+      src="{% static 'admin/DataTables/datatables.min.js' %}"
+      type="text/javascript"
+    ></script>
+    <script
+      src="{% static 'admin/jquery-validation/dist/jquery.validate.min.js' %}"
+      type="text/javascript"
+    ></script>
+    <script type="text/javascript">
+      $(function () {
+        $("#example-table").DataTable({
+          pageLength: 10,
+        });
+      });
+    </script>
+    {% block page_scripts %}{% endblock %}
+  </body>
+</html>

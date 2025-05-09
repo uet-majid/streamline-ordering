@@ -1,0 +1,279 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Checkout - The
+Cookie Barrel{% endblock %} {% block content %}
+
+<!-- breadcrumb section -->
+<div class="breadcrumb-section breadcrumb-bg">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2 text-center">
+        <div class="breadcrumb-text">
+          <p>The Cookie Barrel</p>
+          <h1>Checkout</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- checkout section -->
+<div class="checkout-section mt-150 mb-150">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="checkout-accordion-wrap">
+          <form action="#" method="POST">
+            <div class="accordion" id="accordionExample">
+              <!-- Billing Address -->
+              <div class="card single-accordion">
+                <div class="card-header" id="headingOne">
+                  <h5 class="mb-0">
+                    <button
+                      class="btn btn-link"
+                      type="button"
+                      data-toggle="collapse"
+                      data-target="#collapseOne"
+                    >
+                      Billing Address
+                    </button>
+                  </h5>
+                </div>
+                <div
+                  id="collapseOne"
+                  class="collapse show"
+                  data-parent="#accordionExample"
+                >
+                  <div class="card-body">
+                    <div class="billing-address-form">
+                      <p>
+                        <input
+                          type="text"
+                          name="name"
+                          placeholder="Name"
+                          required
+                        />
+                      </p>
+                      <p>
+                        <input
+                          type="email"
+                          name="email"
+                          placeholder="Email"
+                          required
+                        />
+                      </p>
+                      <p>
+                        <input
+                          type="tel"
+                          name="phone"
+                          placeholder="Phone"
+                          required
+                        />
+                      </p>
+                      <p>
+                        <input
+                          type="text"
+                          name="address"
+                          placeholder="Address"
+                          required
+                        />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Shipping Address -->
+              <div class="card single-accordion">
+                <div class="card-header" id="headingTwo">
+                  <h5 class="mb-0">
+                    <button
+                      class="btn btn-link collapsed"
+                      type="button"
+                      data-toggle="collapse"
+                      data-target="#collapseTwo"
+                    >
+                      Shipping Address
+                    </button>
+                  </h5>
+                </div>
+                <div
+                  id="collapseTwo"
+                  class="collapse"
+                  data-parent="#accordionExample"
+                >
+                  <div class="card-body">
+                    <div class="shipping-address-form">
+                      <p>
+                        <input
+                          type="text"
+                          name="shipping_name"
+                          placeholder="Recipient Name"
+                          required
+                        />
+                      </p>
+                      <p>
+                        <input
+                          type="text"
+                          name="shipping_address"
+                          placeholder="Shipping Address"
+                          required
+                        />
+                      </p>
+                      <p>
+                        <input
+                          type="text"
+                          name="shipping_city"
+                          placeholder="City"
+                          required
+                        />
+                      </p>
+                      <p>
+                        <input
+                          type="text"
+                          name="shipping_zip"
+                          placeholder="Postal Code"
+                          required
+                        />
+                      </p>
+                      <p>
+                        <input
+                          type="text"
+                          name="shipping_phone"
+                          placeholder="Contact Number"
+                          required
+                        />
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment Info -->
+              <div class="card single-accordion">
+                <div class="card-header" id="headingThree">
+                  <h5 class="mb-0">
+                    <button
+                      class="btn btn-link collapsed"
+                      type="button"
+                      data-toggle="collapse"
+                      data-target="#collapseThree"
+                    >
+                      Payment Details
+                    </button>
+                  </h5>
+                </div>
+                <div
+                  id="collapseThree"
+                  class="collapse"
+                  data-parent="#accordionExample"
+                >
+                  <div class="card-body">
+                    <div class="card-details">
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        id="payment_method_cod"
+                        value="cod"
+                        checked
+                      />
+                      Cash on Delivery &nbsp;&nbsp;&nbsp;
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        id="payment_method_stripe"
+                        value="stripe"
+                      />
+                      Pay with Card
+
+                      <!-- Stripe fields, hidden by default -->
+                      <div
+                        id="stripe-card-fields"
+                        style="margin-top: 20px; display: none"
+                      >
+                        <p>
+                          <input
+                            type="text"
+                            name="card_name"
+                            placeholder="Name on Card"
+                            required
+                          />
+                        </p>
+                        <p>
+                          <input
+                            type="text"
+                            name="card_number"
+                            placeholder="Card Number"
+                            required
+                          />
+                        </p>
+                        <p>
+                          <input
+                            type="text"
+                            name="card_expiry"
+                            placeholder="MM/YY"
+                            required
+                          />
+                        </p>
+                        <p>
+                          <input
+                            type="text"
+                            name="card_cvc"
+                            placeholder="CVC"
+                            required
+                          />
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- end accordion -->
+            <div class="text-center mt-4">
+              <a href="#" class="boxed-btn">Place Order</a>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Order Summary -->
+      <div class="col-lg-4">
+        <div class="order-details-wrap">
+          <table class="order-details">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Price</th>
+              </tr>
+            </thead>
+            <tbody class="order-details-body">
+              <tr>
+                <td>Chocolate Chip</td>
+                <td>$300</td>
+              </tr>
+              <tr>
+                <td>Oatmeal Raisin</td>
+                <td>$250</td>
+              </tr>
+            </tbody>
+            <tbody class="checkout-details">
+              <tr>
+                <td>Subtotal</td>
+                <td>$550</td>
+              </tr>
+              <tr>
+                <td>Shipping</td>
+                <td>$50</td>
+              </tr>
+              <tr>
+                <td>Total</td>
+                <td>$600</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
