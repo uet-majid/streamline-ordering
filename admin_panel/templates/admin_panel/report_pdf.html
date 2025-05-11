@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sales Report PDF</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 12px;
+        padding: 20px;
+      }
+      .company-header {
+        text-align: center;
+        margin-bottom: 5px;
+      }
+      .company-header h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+      .company-header p {
+        margin: 2px 0;
+        font-size: 13px;
+      }
+      .report-info {
+        margin: 10px 0;
+        font-size: 13px;
+        /* text-align: center; */
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      th,
+      td {
+        border: 1px solid #000;
+        padding: 6px;
+        text-align: center;
+      }
+      th {
+        background-color: #f0f0f0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Company Branding -->
+    <div class="company-header">
+      <p>
+        <span style="font-size: 23px">The Cookie Barrel</span><br /><br />
+        Sweet Moments, Baked Fresh<br />
+        123 Bakery Lane, CookieTown<br />
+        Email: support@cookiebarrel.com | Phone: +123-456-7890
+      </p>
+    </div>
+
+    <!-- Report Summary -->
+    <table style="width: 100%; font-size: 13px; margin-top: 10px">
+      <tr>
+        <td style="text-align: left">
+          <strong>Report Period:</strong> {{ start }} to {{ end }}
+        </td>
+        <td style="text-align: right">
+          <strong>Generated On:</strong> {{ today }}
+        </td>
+      </tr>
+    </table>
+
+    <!-- Report Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>
+            {% if group_by == 'day' %} Date {% elif group_by == 'week' %} Week
+            {% elif group_by == 'month' %} Month {% elif group_by == 'year' %}
+            Year {% else %} Group {% endif %}
+          </th>
+          <th>Total Orders</th>
+          <th>Total Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in report_data %}
+        <tr>
+          <td>{{ row.label }}</td>
+          <td>{{ row.total_orders }}</td>
+          <td>${{ row.total_amount|floatformat:2 }}</td>
+        </tr>
+        {% endfor %} {% if report_data %}
+        <tr
+          style="border-top: 2px solid #000; background-color: #f0f0f0"
+          class="bold"
+        >
+          <td><strong>Total</strong></td>
+          <td><strong>{{ grand_total_orders }}</strong></td>
+          <td><strong>${{ grand_total_amount|floatformat:2 }}</strong></td>
+        </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </body>
+</html>

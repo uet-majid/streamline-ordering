@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Receipt - Order #{{ order.id }}</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        font-size: 11px;
+        color: #000;
+        padding: 10px;
+        margin: 0;
+      }
+
+      .header {
+        text-align: center;
+        margin-bottom: 5px;
+        line-height: 1.3;
+      }
+
+      .header h2 {
+        margin: 2px 0;
+        font-size: 16px;
+      }
+
+      .info {
+        margin-top: 5px;
+        font-size: 11px;
+      }
+
+      .info-table {
+        width: 100%;
+        margin-top: 3px;
+      }
+
+      .info-table td {
+        padding: 2px 0;
+      }
+
+      .section-title {
+        font-weight: bold;
+        margin-top: 8px;
+        margin-bottom: 3px;
+        border-top: 1px dashed #000;
+        padding-top: 3px;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 5px;
+      }
+
+      .table th,
+      .table td {
+        border: 1px solid #000;
+        padding: 3px;
+      }
+
+      .table th {
+        background: #f0f0f0;
+      }
+
+      .right {
+        text-align: right;
+      }
+
+      .totals {
+        width: 100%;
+        margin-top: 5px;
+        border-top: 1px dashed #000;
+        padding-top: 5px;
+      }
+
+      .totals td {
+        padding: 3px;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <p>
+        <span style="font-size: 23px">The Cookie Barrel</span><br /><br />
+        Sweet Moments, Baked Fresh<br />
+        123 Bakery Lane, CookieTown<br />
+        Email: support@cookiebarrel.com | Phone: +123-456-7890
+      </p>
+    </div>
+
+    <table class="info-table">
+      <tr>
+        <td><strong>Order ID:</strong> {{ order.id }}</td>
+        <td class="right">
+          <strong>Date & Time:</strong> {{ order.order_date|date:"d M Y, H:i" }}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Status:</strong> {{ order.order_status|title }}</td>
+        <td class="right">
+          <strong>Customer Name:</strong> {% if order.customer %}{{
+          order.customer.name }}{% else %}Walk-in Customer{% endif %}
+        </td>
+      </tr>
+    </table>
+
+    <div class="section-title" style="text-align: center">Order Items</div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Sr. No.</th>
+          <th>Item</th>
+          <th class="right">Unit Price</th>
+          <th class="right">Qty</th>
+          <th class="right">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in order_items %}
+        <tr>
+          <td style="text-align: center">{{ forloop.counter }}</td>
+          <td>{{ item.product.name }}</td>
+          <td class="right">${{ item.product.price }}</td>
+          <td class="right">{{ item.quantity }}</td>
+          <td class="right">${{ item.price }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <table class="totals">
+      <tr>
+        <td class="right"><strong>Subtotal:</strong></td>
+        <td class="right">${{ subtotal }}</td>
+      </tr>
+      <tr>
+        <td class="right"><strong>Shipping:</strong></td>
+        <td class="right">${{ shipping_cost }}</td>
+      </tr>
+      <tr>
+        <td class="right"><strong>Total:</strong></td>
+        <td class="right"><strong>${{ total }}</strong></td>
+      </tr>
+    </table>
+
+    <div class="footer">
+      Thank you for shopping with us!<br />
+      Visit Again 🍪
+    </div>
+  </body>
+</html>

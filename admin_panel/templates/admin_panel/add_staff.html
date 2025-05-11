@@ -1,0 +1,146 @@
+{% extends 'admin_base.html' %}
+{% load static %}
+{% block title %}Add Staff - Admin Panel{% endblock %}
+
+{% block page_styles %}
+{% endblock %}
+
+{% block content %}
+<!-- START PAGE CONTENT-->
+<div class="row common-form">
+  <div class="col-md-8">
+    <div class="ibox">
+      <div class="ibox-head">
+        <div class="ibox-title">Add New Staff</div>
+      </div>
+      <div class="ibox-body">
+        {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+          {% endfor %}
+        {% endif %}
+
+        <form class="form-horizontal" id="staff-form" method="POST">
+          {% csrf_token %}
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Username</label>
+            <div class="col-sm-10">
+              <input
+                class="form-control"
+                type="text"
+                name="username"
+                placeholder="Username"
+                value="{{ form_data.username|default_if_none:'' }}"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Full Name</label>
+            <div class="col-sm-10">
+              <input
+                class="form-control"
+                type="text"
+                name="name"
+                placeholder="Full name"
+                value="{{ form_data.name|default_if_none:'' }}"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Email</label>
+            <div class="col-sm-10">
+              <input
+                class="form-control"
+                type="email"
+                name="email"
+                placeholder="Email address"
+                value="{{ form_data.email|default_if_none:'' }}"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Password</label>
+            <div class="col-sm-10">
+              <input
+                class="form-control"
+                type="password"
+                name="password"
+                placeholder="Password"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Role</label>
+            <div class="col-sm-10">
+              <select class="form-control" name="role" required>
+                <option value="">Select Role</option>
+                <option value="superadmin" {% if form_data.role == "superadmin" %}selected{% endif %}>Admin</option>
+                <option value="staff" {% if form_data.role == "staff" %}selected{% endif %}>Staff</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <div class="col-sm-10 ml-sm-auto">
+              <button class="btn btn-primary" type="submit">
+                <i class="fa fa-save"></i>&nbsp;&nbsp;Add Staff
+              </button>
+              <a href="{% url 'view_staff' %}" class="btn btn-default">
+                <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Cancel
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- END PAGE CONTENT-->
+{% endblock %}
+
+{% block page_scripts %}
+<script>
+  $(document).ready(function () {
+    $("#staff-form").validate({
+      rules: {
+        username: { required: true },
+        name: { required: true },
+        email: { required: true, email: true },
+        password: { required: true, minlength: 6 },
+        role: { required: true },
+      },
+      messages: {
+        username: "Please enter username",
+        name: "Please enter full name",
+        email: {
+          required: "Please enter email",
+          email: "Enter a valid email",
+        },
+        password: {
+          required: "Please enter password",
+          minlength: "Password must be at least 6 characters",
+        },
+        role: "Please select a role",
+      },
+      errorClass: "help-block error",
+      highlight: function (element) {
+        $(element).closest(".form-group").addClass("has-error");
+      },
+      unhighlight: function (element) {
+        $(element).closest(".form-group").removeClass("has-error");
+      },
+    });
+  });
+</script>
+{% endblock %}

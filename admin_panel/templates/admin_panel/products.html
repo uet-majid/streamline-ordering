@@ -1,6 +1,25 @@
 {% extends 'admin_base.html' %} {% load static %} {% block title %}Products -
 Admin Panel{% endblock %} {% block content %}
 <!-- START PAGE CONTENT-->
+{% if messages %}
+<div class="d-flex justify-content-center mt-3">
+  <div style="min-width: 300px; max-width: 600px; width: 100%">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      {{ message }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
 <div class="ibox">
   <div class="ibox-head">
     <div class="ibox-title">All Products</div>
@@ -21,7 +40,7 @@ Admin Panel{% endblock %} {% block content %}
       cellspacing="0"
       width="100%"
     >
-      <thead>
+      <thead class="bg-primary" style="color: white">
         <tr>
           <th>Sr. No.</th>
           <th>Image</th>
@@ -34,106 +53,56 @@ Admin Panel{% endblock %} {% block content %}
         </tr>
       </thead>
       <tbody>
+        {% for product in products %}
         <tr>
-          <td>1</td>
+          <td>{{ forloop.counter }}</td>
           <td>
+            {% if product.image %}
             <img
-              src="{% static 'admin/img/products/bread.jpg' %}"
+              src="{{ product.image.url }}"
+              alt="{{ product.name }}"
               width="50"
               height="50"
-              class="img-thumbnail"
             />
+            {% else %} No Image {% endif %}
           </td>
-          <td>Whole Wheat Bread</td>
-          <td>Description of product</td>
-          <td>Bakery Items</td>
-          <td>$2.99</td>
-          <td><span class="badge badge-success">Active</span></td>
+          <td>{{ product.name }}</td>
+          <td>{{ product.description }}</td>
+          <td>{{ product.category.name }}</td>
+          <td>${{ product.price }}</td>
+          <td>
+            {% if product.is_active %}
+            <span class="badge badge-success">Active</span>
+            {% else %}
+            <span class="badge badge-warning">Inactive</span>
+            {% endif %}
+          </td>
           <td>
             <a
-              href="{% url 'edit_product' %}"
-              class="btn btn-info btn-sm"
+              href="{% url 'edit_product' product.id %}"
+              class="btn btn-sm btn-info"
               title="Edit"
             >
               <i class="fa fa-pencil"></i>
             </a>
-            <a href="#" class="btn btn-danger btn-sm" title="Delete">
-              <i class="fa fa-trash"></i>
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <td>2</td>
-          <td>
-            <img
-              src="{% static 'admin/img/products/coffee.jpg' %}"
-              width="50"
-              height="50"
-              class="img-thumbnail"
-            />
-          </td>
-          <td>Premium Coffee</td>
-          <td>Description of product</td>
-          <td>Beverages</td>
-          <td>$4.99</td>
-          <td><span class="badge badge-success">Active</span></td>
-          <td>
             <a
-              href="{% url 'edit_product' %}"
-              class="btn btn-info btn-sm"
-              title="Edit"
+              href="{% url 'delete_product' product.id %}"
+              class="btn btn-sm btn-danger"
+              title="Delete"
+              onclick="return confirm('Are you sure you want to delete this product?');"
             >
-              <i class="fa fa-pencil"></i>
-            </a>
-            <a href="#" class="btn btn-danger btn-sm" title="Delete">
               <i class="fa fa-trash"></i>
             </a>
           </td>
         </tr>
+        {% empty %}
         <tr>
-          <td>3</td>
-          <td>
-            <img
-              src="{% static 'admin/img/products/chips.jpg' %}"
-              width="50"
-              height="50"
-              class="img-thumbnail"
-            />
-          </td>
-          <td>Potato Chips</td>
-          <td>Description of product</td>
-          <td>Snacks</td>
-          <td>$1.49</td>
-          <td><span class="badge badge-warning">Inactive</span></td>
-          <td>
-            <a
-              href="{% url 'edit_product' %}"
-              class="btn btn-info btn-sm"
-              title="Edit"
-            >
-              <i class="fa fa-pencil"></i>
-            </a>
-            <a href="#" class="btn btn-danger btn-sm" title="Delete">
-              <i class="fa fa-trash"></i>
-            </a>
-          </td>
+          <td colspan="8" class="text-center">No products found.</td>
         </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
 </div>
 <!-- END PAGE CONTENT-->
-{% endblock %} {% block page_scripts %}
-<script>
-  $(document).ready(function () {
-    // Confirm before delete
-    $(".btn-danger").click(function (e) {
-      e.preventDefault();
-      if (confirm("Are you sure you want to delete this product?")) {
-        // Add your delete logic here
-        alert("Product would be deleted here (backend implementation needed)");
-      }
-    });
-  });
-</script>
-{% endblock %}
+{% endblock %} {% block page_scripts %} {% endblock %}

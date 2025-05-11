@@ -1,6 +1,25 @@
 {% extends 'admin_base.html' %} {% load static %} {% block title %}Contact
 Message - Admin Panel{% endblock %} {% block content %}
 <!-- START PAGE CONTENT-->
+{% if messages %}
+<div class="d-flex justify-content-center mt-3">
+  <div style="min-width: 300px; max-width: 600px; width: 100%">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      {{ message }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
 <div class="row common-form">
   <div class="col-lg-8">
     <div class="ibox">
@@ -11,7 +30,7 @@ Message - Admin Panel{% endblock %} {% block content %}
         <div class="d-flex justify-content-between align-items-center">
           <div>
             <h3 class="ibox-title mb-0" style="color: #3498db">
-              <i class="fa fa-envelope mr-2"></i>Subject: Need help to signup
+              <i class="fa fa-envelope mr-2"></i>Subject: {{ message.subject }}
             </h3>
           </div>
         </div>
@@ -28,7 +47,13 @@ Message - Admin Panel{% endblock %} {% block content %}
             <div class="col-md-6">
               <div class="d-flex align-items-center mb-3">
                 <div>
-                  <h5 class="mb-0">Majid Hussain</h5>
+                  <h5 class="mb-0">
+                    <i
+                      class="fa fa-user mt-1 mr-2"
+                      style="width: 20px; color: #7f8c8d"
+                    ></i
+                    >{{ message.name }}
+                  </h5>
                 </div>
               </div>
             </div>
@@ -39,21 +64,21 @@ Message - Admin Panel{% endblock %} {% block content %}
                     class="fa fa-phone mt-1 mr-2"
                     style="width: 20px; color: #7f8c8d"
                   ></i>
-                  <span>+92 300 1234567</span>
+                  <span>{{ message.phone }}</span>
                 </div>
                 <div class="d-flex mb-2">
                   <i
                     class="fa fa-envelope mt-1 mr-2"
                     style="width: 20px; color: #7f8c8d"
                   ></i>
-                  <span>majid@example.com</span>
+                  <span>{{ message.email }}</span>
                 </div>
                 <div class="d-flex">
                   <i
                     class="fa fa-clock-o mt-1 mr-2"
                     style="width: 20px; color: #7f8c8d"
                   ></i>
-                  <span>23 Apr 2025, 10:30 AM</span>
+                  <span>{{ message.submitted_at|date:"d M Y, h:i A" }}</span>
                 </div>
               </div>
             </div>
@@ -73,12 +98,7 @@ Message - Admin Panel{% endblock %} {% block content %}
             <i class="fa fa-comment mr-2"></i>Message
           </h5>
           <div class="message-text p-3 bg-white rounded">
-            <p class="mb-0">
-              Hi, I want to signup on cookie barrel but getting error when
-              submitting the registration form. The error says "Email already
-              exists" but this is my first time signing up. Please help me
-              resolve this issue.
-            </p>
+            <p class="mb-0">{{ message.message }}</p>
           </div>
         </div>
 
@@ -90,21 +110,20 @@ Message - Admin Panel{% endblock %} {% block content %}
           <h5 class="mb-3" style="color: #2c3e50">
             <i class="fa fa-reply mr-2"></i>Response
           </h5>
-          <form>
+          <form method="POST">
+            {% csrf_token %}
             <div class="form-group">
               <textarea
+                name="response"
                 class="form-control"
                 rows="4"
                 placeholder="Type your response here..."
+                required
               ></textarea>
             </div>
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <button type="submit" class="btn btn-primary">
-                  <i class="fa fa-paper-plane"></i> &nbsp;Send Response
-                </button>
-              </div>
-            </div>
+            <button type="submit" class="btn btn-primary">
+              <i class="fa fa-paper-plane"></i>&nbsp; Send Response
+            </button>
           </form>
         </div>
       </div>
