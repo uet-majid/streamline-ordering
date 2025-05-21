@@ -174,6 +174,8 @@ def admin_home(request):
     latest_orders = []
     for order in latest_orders_raw:
         total = order.orderitem_set.aggregate(total=Sum('price'))['total'] or 0
+        shipping = Decimal('0.00') if total == 0 or total > 75 else Decimal('50.00')
+        total = total + shipping
         latest_orders.append({
             'order': order,
             'total': total
@@ -383,6 +385,8 @@ def orders(request):
     orders = []
     for order in orders_raw:
         total = order.orderitem_set.aggregate(total=Sum('price'))['total'] or 0
+        shipping = Decimal('0.00') if total == 0 or total > 75 else Decimal('50.00')
+        total = total + shipping
         orders.append({
             'order': order,
             'total': total

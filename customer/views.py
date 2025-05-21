@@ -56,7 +56,7 @@ def cart(request):
         item.total_price = item.quantity * item.product.price
 
     subtotal = sum(item.total_price for item in cart_items)
-    shipping = Decimal('0.00') if subtotal == 0 or subtotal > 75 else Decimal('50.00')
+    shipping = Decimal('0.00') if subtotal == 0 or subtotal >= 75 else Decimal('50.00')
     total = subtotal + shipping
 
     context = {
@@ -155,52 +155,84 @@ def quick_add_to_cart(request, product_id):
     return redirect('products')
 
 def checkout_view(request):
+    customer_id = request.session.get('customer_id')
+    if not customer_id:
+        messages.error(request, "Please log in to proceed.")
+        return redirect('login')
+    
+    # Fetch cart items for the logged-in customer
+    cart_items = Cart.objects.filter(customer_id=customer_id)
+
+    # Calculate subtotal
+    for item in cart_items:
+        item.total_price = item.quantity * item.product.price
+
+    subtotal = sum(item.total_price for item in cart_items)
+    shipping = Decimal('0.00') if subtotal == 0 or subtotal >= 75 else Decimal('50.00')
+    total = subtotal + shipping
+
     if request.method == 'POST':
-        # Capture form data
         form_data = {
-            'name': request.POST.get('name'),
-            'email': request.POST.get('email'),
-            'phone': request.POST.get('phone'),
-            'address': request.POST.get('address'),
+            'billing_name': request.POST.get('name'),
+            'billing_email': request.POST.get('email'),
+            'billing_phone': request.POST.get('phone'),
+            'billing_address': request.POST.get('address'),
             'shipping_name': request.POST.get('shipping_name'),
             'shipping_address': request.POST.get('shipping_address'),
             'shipping_city': request.POST.get('shipping_city'),
-            'shipping_zip': request.POST.get('shipping_zip'),
+            'shipping_postal_code': request.POST.get('shipping_zip'),
             'shipping_phone': request.POST.get('shipping_phone'),
         }
+
         payment_method = request.POST.get('payment_method')
 
-        if not all(form_data.values()):
+        if not all(form_data.values()) or not payment_method:
             messages.error(request, "All fields are required.")
-            return render(request, 'checkout.html', {'previous_data': form_data})
+            return render(request, 'customer/checkout.html', {
+                'previous_data': form_data,
+                'payment_method': payment_method,
+                'cart_items': cart_items,
+                'subtotal': subtotal,
+                'shipping': shipping,
+                'total': total
+            })
 
-        # Handle COD directly
-        if payment_method == 'cod':
-            order = Order.objects.create(
-                user=request.user,
-                payment_method='COD',
-                status='Pending',
-                **form_data
-            )
-            # Add cart items to order (you must customize this)
-            Cart.objects.filter(user=request.user).delete()
-            messages.success(request, "Order placed successfully with Cash on Delivery.")
-            return redirect('home')
-
-        # Handle Stripe - save form data in session temporarily
         request.session['order_form_data'] = form_data
-        return redirect('create_stripe_session')
 
-    return render(request, 'customer/checkout.html', {'previous_data': {}})
+        if payment_method == 'cod':
+            _create_order(customer_id, form_data, payment_method='cod', payment_status='unpaid')
+            messages.success(request, "Order placed successfully with Cash on Delivery.")
+            return redirect('my_orders')
+
+        elif payment_method == 'online':
+            return redirect('create_stripe_session')
+
+    return render(request, 'customer/checkout.html', {
+        'previous_data': {},
+        'cart_items': cart_items,
+        'subtotal': subtotal,
+        'shipping': shipping,
+        'total': total
+    })
+
 
 def create_stripe_session(request):
-    cart_items = Cart.objects.filter(user=request.user)
-    if not cart_items:
+    customer_id = request.session.get('customer_id')
+    if not customer_id:
+        messages.error(request, "Login required.")
+        return redirect('login')
+
+    customer = Customer.objects.get(id=customer_id)
+    cart_items = Cart.objects.filter(customer=customer_id)
+    if not cart_items.exists():
         messages.error(request, "Your cart is empty.")
         return redirect('checkout')
 
+    # Calculate subtotal
+    subtotal = sum(item.product.price * item.quantity for item in cart_items)
+    shipping = 0 if subtotal >= 75 else 50
+
     line_items = []
-    total_amount = 0
     for item in cart_items:
         line_items.append({
             'price_data': {
@@ -212,7 +244,19 @@ def create_stripe_session(request):
             },
             'quantity': item.quantity,
         })
-        total_amount += item.product.price * item.quantity
+
+    # Add shipping if applicable
+    if shipping > 0:
+        line_items.append({
+            'price_data': {
+                'currency': 'usd',
+                'unit_amount': int(shipping * 100),
+                'product_data': {
+                    'name': 'Shipping',
+                },
+            },
+            'quantity': 1,
+        })
 
     try:
         session = stripe.checkout.Session.create(
@@ -221,37 +265,57 @@ def create_stripe_session(request):
             mode='payment',
             success_url=request.build_absolute_uri('/payment-success/'),
             cancel_url=request.build_absolute_uri('/payment-cancel/'),
-            customer_email=request.user.email,
+            customer_email=customer.email,
         )
         return redirect(session.url, code=303)
-
     except Exception as e:
         messages.error(request, f"Stripe error: {str(e)}")
         return redirect('checkout')
 
 
 def payment_success(request):
+    customer_id = request.session.get('customer_id')
     form_data = request.session.get('order_form_data')
-    if not form_data:
-        messages.error(request, "Order data missing.")
+
+    if not customer_id or not form_data:
+        messages.error(request, "Something went wrong. Please try again.")
         return redirect('checkout')
 
-    order = Order.objects.create(
-        user=request.user,
-        payment_method='Stripe',
-        status='Paid',
-        **form_data
-    )
-    # Add cart items to order (customize this)
-    Cart.objects.filter(user=request.user).delete()
+    _create_order(customer_id, form_data, payment_method='online', payment_status='paid')
     del request.session['order_form_data']
+
     messages.success(request, "Payment successful and order placed.")
-    return redirect('home')
+    return redirect('my_orders')
 
 
 def payment_cancel(request):
     messages.error(request, "Payment was cancelled.")
     return redirect('checkout')
+
+def _create_order(customer_id, form_data, payment_method, payment_status):
+    customer = Customer.objects.get(id=customer_id)
+    cart_items = Cart.objects.filter(customer=customer)
+
+    if not cart_items.exists():
+        return
+
+    order = Order.objects.create(
+        customer=customer,
+        payment_method=payment_method,
+        payment_status=payment_status,
+        order_status='pending',
+        **form_data
+    )
+
+    for item in cart_items:
+        OrderItem.objects.create(
+            order=order,
+            product=item.product,
+            quantity=item.quantity,
+            price=Decimal(item.product.price)
+        )
+
+    cart_items.delete()
 
 def contact(request):
     if request.method == 'POST':
@@ -499,18 +563,71 @@ def forgot_password(request):
 def my_orders_view(request):
     customer_id = request.session.get('customer_id')
     if not customer_id:
-        messages.error(request, "Please login first to your account.")
+        messages.error(request, "Please log in to view your orders.")
         return redirect('login')
-    
-    return render(request, 'customer/my_orders.html')
 
-def order_details_view(request):
+    orders_raw = Order.objects.filter(customer_id=customer_id).order_by('-id')
+    
+    orders = []
+    for order in orders_raw:
+        subtotal = order.orderitem_set.aggregate(total=Sum('price'))['total'] or 0
+        total = subtotal if subtotal >= 75 else subtotal + 50
+        orders.append({
+            'order': order,
+            'total': total
+        })
+
+    return render(request, 'customer/my_orders.html', {'orders': orders})
+
+def order_details_view(request, order_id):
     customer_id = request.session.get('customer_id')
     if not customer_id:
         messages.error(request, "Please login first to your account.")
         return redirect('login')
     
-    return render(request, 'customer/order_details.html')
+    order = get_object_or_404(Order, id=order_id, customer_id=customer_id)
+    order_items = OrderItem.objects.filter(order=order)
+
+    cart_data = []
+    subtotal = 0
+
+    for item in order_items:
+        total_price = item.quantity * item.price
+        cart_data.append({
+            'product_name': item.product.name,
+            'quantity': item.quantity,
+            'price': item.price,
+            'total': total_price,
+        })
+        subtotal += total_price
+
+    shipping = Decimal('0.00') if subtotal == 0 or subtotal >= 75 else Decimal('50.00')
+    total = subtotal + shipping
+
+    context = {
+        'order': order,
+        'cart_data': cart_data,
+        'subtotal': subtotal,
+        'shipping': shipping,
+        'total': total,
+    }
+    return render(request, 'customer/order_details.html', context)
+
+def cancel_order_view(request, order_id):
+    customer_id = request.session.get('customer_id')
+    if not customer_id:
+        return redirect('login')
+
+    order = get_object_or_404(Order, id=order_id, customer_id=customer_id)
+
+    if order.order_status != 'pending':
+        messages.error(request, 'Only pending orders can be cancelled.')
+    else:
+        order.order_status = 'cancelled'
+        order.save()
+        messages.success(request, f'Order #{order.id} has been cancelled.')
+
+    return redirect('order_details_customer', order_id=order.id)
 
 def reset_password_view(request):
     customer_id = request.session.get('customer_id')

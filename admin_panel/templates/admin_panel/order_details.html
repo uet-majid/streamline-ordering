@@ -68,7 +68,7 @@
             {% endif %}
             <br />
             <strong>Payment:</strong>
-            {% if order.payment_status == 'cod' %}
+            {% if order.payment_method == 'cod' %}
             <span class="badge badge-warning">Pending</span>
             {% else %}
             <span class="badge badge-success">Paid</span>
@@ -180,15 +180,15 @@
             <tfoot>
               <tr>
                 <th colspan="4" class="text-right">Subtotal:</th>
-                <th>${{ subtotal }}</th>
+                <th>${{ subtotal|floatformat:2 }}</th>
               </tr>
               <tr>
                 <th colspan="4" class="text-right">Shipping:</th>
-                <th>${{ shipping_cost }}</th>
+                <th>${{ shipping_cost|floatformat:2 }}</th>
               </tr>
               <tr>
                 <th colspan="4" class="text-right">Total:</th>
-                <th><strong>${{ total }}</strong></th>
+                <th><strong>${{ total|floatformat:2 }}</strong></th>
               </tr>
             </tfoot>
           </table>

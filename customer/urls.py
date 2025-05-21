@@ -34,7 +34,8 @@ urlpatterns = [
     path('profile/change-password/', views.change_password_view, name='change_password'),
 
     path('my-orders/', views.my_orders_view, name='my_orders'),
-    path('order-details/', views.order_details_view, name='order_details'),
+    path('order-details/<int:order_id>/', views.order_details_view, name='order_details_customer'),
+    path('cancel-order/<int:order_id>/', views.cancel_order_view, name='cancel_order_customer'),
 
     path('about/', views.about, name='about'),
     path('terms-and-conditions/', views.terms_conditions_view, name='terms_conditions'),

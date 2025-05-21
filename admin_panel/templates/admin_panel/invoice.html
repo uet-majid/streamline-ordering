@@ -78,8 +78,8 @@
       <div class="dashed"></div>
       <p>
         <strong>Customer:</strong>
-        {% if order.customer %} {{ order.customer.name }} {% else %} Walk-in
-        Customer {% endif %}
+        <!-- prettier-ignore -->
+        {% if order.customer %} {{ order.customer.name }} {% else %} Walk-in Customer {% endif %}
       </p>
 
       <table style="margin-top: 20px">
@@ -108,15 +108,15 @@
       <table>
         <tr>
           <td><strong>Subtotal:</strong></td>
-          <td class="totals">${{ subtotal }}</td>
+          <td class="totals">${{ subtotal|floatformat:2 }}</td>
         </tr>
         <tr>
           <td><strong>Shipping:</strong></td>
-          <td class="totals">${{ shipping_cost }}</td>
+          <td class="totals">${{ shipping_cost|floatformat:2 }}</td>
         </tr>
         <tr>
           <td><strong>Total:</strong></td>
-          <td class="totals"><strong>${{ total }}</strong></td>
+          <td class="totals"><strong>${{ total|floatformat:2 }}</strong></td>
         </tr>
       </table>
 

@@ -62,7 +62,6 @@ Admin Panel{% endblock %} {% block content %}
           </td>
           <td>{{ order.shipping_address|default:"Collected at counter" }}</td>
           <td>${{ total|floatformat:2 }}</td>
-          <!--Total Order Amount -->
           <td>{{ order.order_date|date:"d M Y" }}</td>
           <td>
             {% if order.payment_status == 'paid' %}

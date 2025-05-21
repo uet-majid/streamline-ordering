@@ -103,8 +103,9 @@
       <tr>
         <td><strong>Status:</strong> {{ order.order_status|title }}</td>
         <td class="right">
-          <strong>Customer Name:</strong> {% if order.customer %}{{
-          order.customer.name }}{% else %}Walk-in Customer{% endif %}
+          <strong>Customer Name:</strong>
+          <!-- prettier-ignore -->
+          {% if order.customer %}{{ order.customer.name }}{% else %}Walk-in Customer{% endif %}
         </td>
       </tr>
     </table>
@@ -136,15 +137,15 @@
     <table class="totals">
       <tr>
         <td class="right"><strong>Subtotal:</strong></td>
-        <td class="right">${{ subtotal }}</td>
+        <td class="right">${{ subtotal|floatformat:2 }}</td>
       </tr>
       <tr>
         <td class="right"><strong>Shipping:</strong></td>
-        <td class="right">${{ shipping_cost }}</td>
+        <td class="right">${{ shipping_cost|floatformat:2 }}</td>
       </tr>
       <tr>
         <td class="right"><strong>Total:</strong></td>
-        <td class="right"><strong>${{ total }}</strong></td>
+        <td class="right"><strong>${{ total|floatformat:2 }}</strong></td>
       </tr>
     </table>
 
