@@ -1,0 +1,48 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Search Results -
+The Cookie Barrel{% endblock %} {% block content %}
+
+<!-- breadcrumb -->
+<div class="breadcrumb-section breadcrumb-bg">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 offset-lg-2 text-center">
+        <div class="breadcrumb-text">
+          <p>Search Results for</p>
+          <h1>"{{ query }}"</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- product section -->
+<div class="product-section mt-150 mb-150">
+  <div class="container">
+    {% if results %}
+    <div class="row">
+      {% for product in results %}
+      <div class="col-lg-4 col-md-6 text-center">
+        <div class="single-product-item">
+          <a href="{% url 'product_details' product.id %}">
+            <div class="product-image">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" />
+            </div>
+            <h3>{{ product.name }}</h3>
+            <p class="product-price">${{ product.price }}</p>
+          </a>
+          <a href="{% url 'quick_add_to_cart' product.id %}" class="cart-btn">
+            <i class="fas fa-shopping-cart"></i> Add to Cart
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center">
+      <h4>No products found matching your search.</h4>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

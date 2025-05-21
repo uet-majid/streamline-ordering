@@ -2781,3 +2781,9 @@ table.order-details tbody td {
   background-color: #051922 !important;
   color: #f28123 !important;
 }
+
+.alert-error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}

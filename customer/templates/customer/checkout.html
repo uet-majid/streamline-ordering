@@ -20,8 +20,22 @@ Cookie Barrel{% endblock %} {% block content %}
   <div class="container">
     <div class="row">
       <div class="col-lg-8">
+        {% if messages %} {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} col-lg-10 offset-lg-1">
+          {{ message }}
+          <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %} {% endif %}
         <div class="checkout-accordion-wrap">
           <form action="#" method="POST">
+            {% csrf_token %}
             <div class="accordion" id="accordionExample">
               <!-- Billing Address -->
               <div class="card single-accordion">
@@ -49,6 +63,7 @@ Cookie Barrel{% endblock %} {% block content %}
                           type="text"
                           name="name"
                           placeholder="Name"
+                          value="{{ previous_data.name }}"
                           required
                         />
                       </p>
@@ -57,6 +72,7 @@ Cookie Barrel{% endblock %} {% block content %}
                           type="email"
                           name="email"
                           placeholder="Email"
+                          value="{{ previous_data.email }}"
                           required
                         />
                       </p>
@@ -65,6 +81,7 @@ Cookie Barrel{% endblock %} {% block content %}
                           type="tel"
                           name="phone"
                           placeholder="Phone"
+                          value="{{ previous_data.phone }}"
                           required
                         />
                       </p>
@@ -73,6 +90,7 @@ Cookie Barrel{% endblock %} {% block content %}
                           type="text"
                           name="address"
                           placeholder="Address"
+                          value="{{ previous_data.address }}"
                           required
                         />
                       </p>
@@ -107,6 +125,7 @@ Cookie Barrel{% endblock %} {% block content %}
                           type="text"
                           name="shipping_name"
                           placeholder="Recipient Name"
+                          value="{{ previous_data.shipping_name }}"
                           required
                         />
                       </p>
@@ -115,6 +134,7 @@ Cookie Barrel{% endblock %} {% block content %}
                           type="text"
                           name="shipping_address"
                           placeholder="Shipping Address"
+                          value="{{ previous_data.shipping_address }}"
                           required
                         />
                       </p>
@@ -123,6 +143,7 @@ Cookie Barrel{% endblock %} {% block content %}
                           type="text"
                           name="shipping_city"
                           placeholder="City"
+                          value="{{ previous_data.shipping_city }}"
                           required
                         />
                       </p>
@@ -131,6 +152,7 @@ Cookie Barrel{% endblock %} {% block content %}
                           type="text"
                           name="shipping_zip"
                           placeholder="Postal Code"
+                          value="{{ previous_data.shipping_zip }}"
                           required
                         />
                       </p>
@@ -139,6 +161,7 @@ Cookie Barrel{% endblock %} {% block content %}
                           type="text"
                           name="shipping_phone"
                           placeholder="Contact Number"
+                          value="{{ previous_data.shipping_phone }}"
                           required
                         />
                       </p>
@@ -183,45 +206,6 @@ Cookie Barrel{% endblock %} {% block content %}
                         value="stripe"
                       />
                       Pay with Card
-
-                      <!-- Stripe fields, hidden by default -->
-                      <div
-                        id="stripe-card-fields"
-                        style="margin-top: 20px; display: none"
-                      >
-                        <p>
-                          <input
-                            type="text"
-                            name="card_name"
-                            placeholder="Name on Card"
-                            required
-                          />
-                        </p>
-                        <p>
-                          <input
-                            type="text"
-                            name="card_number"
-                            placeholder="Card Number"
-                            required
-                          />
-                        </p>
-                        <p>
-                          <input
-                            type="text"
-                            name="card_expiry"
-                            placeholder="MM/YY"
-                            required
-                          />
-                        </p>
-                        <p>
-                          <input
-                            type="text"
-                            name="card_cvc"
-                            placeholder="CVC"
-                            required
-                          />
-                        </p>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -229,7 +213,13 @@ Cookie Barrel{% endblock %} {% block content %}
             </div>
             <!-- end accordion -->
             <div class="text-center mt-4">
-              <a href="#" class="boxed-btn">Place Order</a>
+              <button
+                type="submit"
+                class="custom-btn"
+                style="border: none; border-radius: 50px"
+              >
+                Place Order
+              </button>
             </div>
           </form>
         </div>

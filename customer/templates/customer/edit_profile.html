@@ -23,14 +23,26 @@ Cookie Barrel{% endblock %} {% block content %}
           action="{% url 'edit_profile' %}"
           onSubmit="return valid_edit_form(this);"
         >
-          {% csrf_token %}
+          {% if messages %} {% for message in messages %}
+          <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+            <button
+              type="button"
+              class="close"
+              data-dismiss="alert"
+              aria-label="Close"
+            >
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          {% endfor %} {% endif %} {% csrf_token %}
           <p>
             <label>Full Name</label><br />
             <input
               type="text"
               style="width: 100%"
               name="name"
-              value="Majid Hussain"
+              value="{{ form_data.name }}"
               id="name"
             />
           </p>
@@ -40,7 +52,7 @@ Cookie Barrel{% endblock %} {% block content %}
               type="email"
               name="email"
               id="email"
-              value="majid.it07@gmail.com"
+              value="{{ form_data.email }}"
               readonly
               disabled
               style="width: 100%"
@@ -52,7 +64,7 @@ Cookie Barrel{% endblock %} {% block content %}
               type="text"
               style="width: 100%"
               name="phone"
-              value="03143051005"
+              value="{{ form_data.phone }}"
               id="phone"
             />
           </p>
@@ -62,7 +74,7 @@ Cookie Barrel{% endblock %} {% block content %}
               type="text"
               style="width: 100%"
               name="address"
-              value="Lahore"
+              value="{{ form_data.address }}"
               id="address"
             />
           </p>

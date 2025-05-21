@@ -1,5 +1,5 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Product Details -
-The Cookie Barrel{% endblock %} {% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}{{ product.name }}
+- The Cookie Barrel{% endblock %} {% block content %}
 
 <!-- breadcrumb-section -->
 <div class="breadcrumb-section breadcrumb-bg">
@@ -8,7 +8,7 @@ The Cookie Barrel{% endblock %} {% block content %}
       <div class="col-lg-8 offset-lg-2 text-center">
         <div class="breadcrumb-text">
           <p>See More Details</p>
-          <h1>Deluxe Cookie Box</h1>
+          <h1>{{ product.name }}</h1>
         </div>
       </div>
     </div>
@@ -21,30 +21,38 @@ The Cookie Barrel{% endblock %} {% block content %}
     <div class="row p-4 shadow-sm border rounded">
       <div class="col-md-5">
         <div class="single-product-img">
-          <img
-            src="{% static 'customer/img/products/gift-box-2.jpg' %}"
-            alt=""
-          />
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" />
         </div>
       </div>
       <div class="col-md-7">
         <div class="single-product-content">
-          <h3>Deluxe Cookie Box</h3>
-          <p class="single-product-pricing"><span>Per Box</span> $950</p>
-          <p>
-            Deluxe Cookie Box offers a rich assortment of our finest cookies,
-            freshly baked to perfection. Perfect for gifting, celebrations, or
-            indulging yourself with a variety of classic flavors. Every bite
-            promises homemade goodness and premium quality.
-          </p>
+          <h3>{{ product.name }}</h3>
+          <p><strong>Category:</strong> {{ product.category.name }}</p>
+          <p class="single-product-pricing">${{ product.price }}</p>
+          <p>{{ product.description }}</p>
           <div class="single-product-form">
-            <form action="#">
-              <input type="number" placeholder="1" min="1" />
-            </form>
-            <a href="{% url 'cart' %}" class="cart-btn"
-              ><i class="fas fa-shopping-cart"></i> Add to Cart</a
+            <form
+              action="{% url 'add_to_cart' product.id %}"
+              method="POST"
+              class="d-flex flex-column gap-2"
+              style="max-width: 200px"
             >
-            <p><strong>Categories:</strong> Gift Box</p>
+              {% csrf_token %}
+              <input
+                type="number"
+                name="quantity"
+                min="1"
+                class="form-control"
+                value="{{ previous_quantity|default:1 }}"
+              />
+              <button
+                type="submit"
+                class="custom-btn"
+                style="border-radius: 50px; border: none"
+              >
+                <i class="fas fa-shopping-cart"></i> Add to Cart
+              </button>
+            </form>
           </div>
         </div>
       </div>
@@ -64,54 +72,24 @@ The Cookie Barrel{% endblock %} {% block content %}
       </div>
     </div>
     <div class="row">
+      {% for related in related_products %}
       <div class="col-lg-4 col-md-6 text-center">
         <div class="single-product-item">
-          <div class="product-image">
-            <a href="#"
-              ><img
-                src="{% static 'customer/img/products/gift-box-1.jpg' %}"
-                alt=""
-            /></a>
-          </div>
-          <h3>Mini Cookie Gift Box</h3>
-          <p class="product-price"><span>Per Box</span> $550</p>
-          <a href="{% url 'cart' %}" class="cart-btn"
+          <a href="{% url 'product_details' related.id %}">
+            <div class="product-image">
+              <img src="{{ related.image.url }}" alt="{{ related.name }}" />
+            </div>
+            <h3>{{ related.name }}</h3>
+            <p class="product-price">${{ related.price }}</p>
+          </a>
+          <a href="{% url 'quick_add_to_cart' related.id %}" class="cart-btn"
             ><i class="fas fa-shopping-cart"></i> Add to Cart</a
           >
         </div>
       </div>
-      <div class="col-lg-4 col-md-6 text-center">
-        <div class="single-product-item">
-          <div class="product-image">
-            <a href="#"
-              ><img
-                src="{% static 'customer/img/products/cookies_1.jpg' %}"
-                alt=""
-            /></a>
-          </div>
-          <h3>Chocolate Chip Cookies</h3>
-          <p class="product-price"><span>Per Box</span> $300</p>
-          <a href="{% url 'cart' %}" class="cart-btn"
-            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
-          >
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6 text-center">
-        <div class="single-product-item">
-          <div class="product-image">
-            <a href="#"
-              ><img
-                src="{% static 'customer/img/products/brownies_1.jpg' %}"
-                alt=""
-            /></a>
-          </div>
-          <h3>Fudge Brownie</h3>
-          <p class="product-price"><span>Per Slice</span> $150</p>
-          <a href="{% url 'cart' %}" class="cart-btn"
-            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
-          >
-        </div>
-      </div>
+      {% empty %}
+      <p class="text-center">No related products found.</p>
+      {% endfor %}
     </div>
   </div>
 </div>

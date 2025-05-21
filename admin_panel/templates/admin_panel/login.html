@@ -32,8 +32,20 @@
       <div class="brand">
         <span>The Cookie Barrel</span>
       </div>
-      <form id="login-form" action="{% url 'login' %}" method="post">
-        {% csrf_token %}
+      <form id="login-form" action="{% url 'admin_login' %}" method="post">
+        {% if messages %} {% for message in messages %}
+        <div class="alert alert-danger">
+          {{ message }}
+          <button
+            type="button"
+            style="cursor: pointer"
+            class="close"
+            data-dismiss="alert"
+          >
+            &times;
+          </button>
+        </div>
+        {% endfor %} {% endif %} {% csrf_token %}
         <h2 class="login-title">Admin - Log in</h2>
         <div class="form-group">
           <div class="input-group-icon right">
@@ -59,7 +71,13 @@
           </div>
         </div>
         <div class="form-group">
-          <button class="btn btn-info btn-block" type="submit">Login</button>
+          <button
+            class="btn btn-info btn-block"
+            style="cursor: pointer"
+            type="submit"
+          >
+            Login
+          </button>
         </div>
       </form>
     </div>
@@ -88,7 +106,7 @@
       src="{% static 'admin/jquery-validation/dist/jquery.validate.min.js' %}"
       type="text/javascript"
     ></script>
-
+    <script src="{% static 'admin/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script
       src="{% static 'admin/js/app.js' %}"
       type="text/javascript"
@@ -114,6 +132,14 @@
           },
         });
       });
+      // Auto-dismiss alerts after 4 seconds
+      setTimeout(function () {
+        const alerts = document.querySelectorAll(".alert");
+        alerts.forEach(function (alert) {
+          const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+          bsAlert.close();
+        });
+      }, 4000);
     </script>
   </body>
 </html>

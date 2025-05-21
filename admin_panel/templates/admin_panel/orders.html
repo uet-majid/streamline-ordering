@@ -1,9 +1,37 @@
 {% extends 'admin_base.html' %} {% load static %} {% block title %}Orders -
 Admin Panel{% endblock %} {% block content %}
 <!-- START PAGE CONTENT-->
+{% if messages %}
+<div class="d-flex justify-content-center mt-3">
+  <div style="min-width: 300px; max-width: 600px; width: 100%">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      {{ message }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
 <div class="ibox">
   <div class="ibox-head">
     <div class="ibox-title">All Orders</div>
+    <div class="ibox-tools">
+      <a
+        href="{% url 'create_order' %}"
+        class="btn btn-primary"
+        style="padding: 5px 13px !important; color: white"
+      >
+        <i class="fa fa-plus"></i> Create New Order
+      </a>
+    </div>
   </div>
   <div class="ibox-body table-responsive">
     <table
@@ -12,11 +40,12 @@ Admin Panel{% endblock %} {% block content %}
       cellspacing="0"
       width="100%"
     >
-      <thead>
+      <thead class="bg-primary" style="color: white">
         <tr>
           <th>Order ID</th>
           <th>Customer Name</th>
           <th>Shipping Address</th>
+          <th>Order Amount</th>
           <th>Order Date</th>
           <th>Payment Status</th>
           <th>Order Status</th>
@@ -24,54 +53,60 @@ Admin Panel{% endblock %} {% block content %}
         </tr>
       </thead>
       <tbody>
+        {% for item in orders %} {% with order=item.order total=item.total %}
         <tr>
-          <td>1</td>
-          <td>Majid Hussain</td>
-          <td>UOL Lahore</td>
-          <td>23 Apr 2025</td>
-          <td><span class="badge badge-success">Paid</span></td>
-          <td><span class="badge badge-success">Delivered</span></td>
+          <td>{{ order.id }}</td>
+          <td>
+            {% if order.customer %}{{ order.customer.name }}{% else %}Walk-in
+            Customer{% endif %}
+          </td>
+          <td>{{ order.shipping_address|default:"Collected at counter" }}</td>
+          <td>${{ total|floatformat:2 }}</td>
+          <!--Total Order Amount -->
+          <td>{{ order.order_date|date:"d M Y" }}</td>
+          <td>
+            {% if order.payment_status == 'paid' %}
+            <span class="badge badge-success">Paid</span>
+            {% elif order.payment_method == 'cod' %}
+            <span class="badge badge-info">COD</span>
+            {% else %}
+            <span class="badge badge-warning">Unpaid</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if order.order_status == 'pending' %}
+            <span class="badge badge-warning">Pending</span>
+            {% elif order.order_status == 'delivered' %}
+            <span class="badge badge-success">Delivered</span>
+            {% else %}
+            <span class="badge badge-danger">Canceled</span>
+            {% endif %}
+          </td>
           <td>
             <a
-              href="{% url 'order_details' order_id=1 %}"
+              href="{% url 'order_details' order_id=order.id %}"
               class="btn btn-success btn-sm"
+              title="View Details"
             >
-              View Details
+              <i class="fa fa-eye"></i>
+            </a>
+            <a
+              href="{% url 'download_receipt' order.id %}"
+              class="btn btn-primary btn-sm"
+              title="Download Receipt"
+              ><i class="fa fa-download"></i
+            ></a>
+            <a
+              href="{% url 'print_invoice' order.id %}"
+              target="_blank"
+              class="btn btn-secondary btn-sm"
+              title="Print Receipt"
+            >
+              <i class="fa fa-print"></i>
             </a>
           </td>
         </tr>
-        <tr>
-          <td>1</td>
-          <td>Majid Hussain</td>
-          <td>UOL Lahore</td>
-          <td>23 Apr 2025</td>
-          <td><span class="badge badge-success">Paid</span></td>
-          <td><span class="badge badge-warning">Pending</span></td>
-          <td>
-            <a
-              href="{% url 'order_details' order_id=1 %}"
-              class="btn btn-success btn-sm"
-            >
-              View Details
-            </a>
-          </td>
-        </tr>
-        <tr>
-          <td>1</td>
-          <td>Majid Hussain</td>
-          <td>UOL Lahore</td>
-          <td>23 Apr 2025</td>
-          <td><span class="badge badge-info">COD</span></td>
-          <td><span class="badge badge-danger">Canceled</span></td>
-          <td>
-            <a
-              href="{% url 'order_details' order_id=1 %}"
-              class="btn btn-success btn-sm"
-            >
-              View Details
-            </a>
-          </td>
-        </tr>
+        {% endwith %} {% endfor %}
       </tbody>
     </table>
   </div>

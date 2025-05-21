@@ -13,11 +13,26 @@ Admin Panel{% endblock %} {% block page_styles %}
         <div class="ibox-title">Add New Product</div>
       </div>
       <div class="ibox-body">
+        {% if messages %} {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+          <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %} {% endif %}
         <form
           class="form-horizontal"
           id="product-form"
           enctype="multipart/form-data"
+          method="POST"
         >
+          {% csrf_token %}
           <div class="form-group row">
             <label class="col-sm-2 col-form-label">Name</label>
             <div class="col-sm-10">
@@ -26,6 +41,7 @@ Admin Panel{% endblock %} {% block page_styles %}
                 type="text"
                 name="name"
                 placeholder="Product name"
+                value="{{ form_data.name|default_if_none:'' }}"
                 required
               />
             </div>
@@ -34,13 +50,15 @@ Admin Panel{% endblock %} {% block page_styles %}
           <div class="form-group row">
             <label class="col-sm-2 col-form-label">Description</label>
             <div class="col-sm-10">
+              <!-- prettier-ignore -->
               <textarea
                 class="form-control"
                 name="description"
                 placeholder="Product description"
                 rows="3"
                 required
-              ></textarea>
+              >{{ form_data.description|default_if_none:'' }}</textarea
+              >
             </div>
           </div>
 
@@ -52,8 +70,8 @@ Admin Panel{% endblock %} {% block page_styles %}
                 type="number"
                 name="price"
                 placeholder="00"
-                step="1"
-                min="0"
+                min="1"
+                value="{{ form_data.price|default_if_none:'' }}"
                 required
               />
             </div>
@@ -67,11 +85,14 @@ Admin Panel{% endblock %} {% block page_styles %}
                 name="category"
                 required
               >
-                <option></option>
                 <option value="">Select Category</option>
-                <option value="1">Bakery Items</option>
-                <option value="2">Beverages</option>
-                <option value="3">Snacks</option>
+                <!-- prettier-ignore -->
+                {% for category in categories %}
+                  <option value="{{ category.id }}"
+                    {% if form_data.category == category.id|stringformat:"s" %}selected{% endif %} >
+                    {{ category.name }}
+                  </option>
+                {% endfor %}
               </select>
             </div>
           </div>
@@ -83,7 +104,6 @@ Admin Panel{% endblock %} {% block page_styles %}
                 class="form-control"
                 name="image"
                 accept="image/*"
-                required
               />
             </div>
           </div>
@@ -91,13 +111,12 @@ Admin Panel{% endblock %} {% block page_styles %}
           <div class="form-group row">
             <div class="col-sm-10 ml-sm-auto">
               <div class="form-check">
+                <!-- prettier-ignore -->
                 <input
                   class="form-check-input"
                   type="checkbox"
                   name="is_active"
-                  id="is_active"
-                  checked
-                />
+                  id="is_active" {% if form_data.is_active == 'on' or not form_data %} checked {% endif %} />
                 <label class="form-check-label" for="is_active">
                   Active Product
                 </label>

@@ -9,9 +9,11 @@ function valid_datas(f) {
       '<span class="wrong">Your email must not be empty and correct format!</span>'
     );
     notice(f.email);
-    //}else if( f.phone.value == '' ){
-    //jQuery('#form_status').html('<span class="wrong">Your phone must not be empty and correct format!</span>');
-    //notice( f.phone );
+  } else if (f.phone.value == "") {
+    jQuery("#form_status").html(
+      '<span class="wrong">Your phone must not be empty and correct format!</span>'
+    );
+    notice(f.phone);
   } else if (f.subject.value == "") {
     jQuery("#form_status").html(
       '<span class="wrong">Your subject must not be empty!</span>'
@@ -177,4 +179,16 @@ function valid_change_password(f) {
   }
 
   return false; // prevent form submission if any check fails
+}
+
+function valid_otp(f) {
+  if (f.otp.value.trim() === "") {
+    jQuery("#login_signup_form_status").html(
+      '<span class="wrong">OTP must not be empty!</span>'
+    );
+    notice(f.otp);
+    return false;
+  } else {
+    return true;
+  }
 }

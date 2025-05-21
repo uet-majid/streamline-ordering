@@ -19,6 +19,19 @@ Barrel{% endblock %} {% block content %}
 <div class="cart-section mt-150 mb-150">
   <div class="container">
     <div class="row">
+      {% if messages %} {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} col-lg-6 offset-lg-3">
+        {{ message }}
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %} {% endif %} {% if cart_items %}
       <div class="col-lg-8 col-md-12">
         <div class="cart-table-wrap">
           <table class="cart-table">
@@ -33,42 +46,57 @@ Barrel{% endblock %} {% block content %}
               </tr>
             </thead>
             <tbody>
-              <!-- Static placeholder rows - later to be replaced with dynamic cart items -->
+              {% for item in cart_items %}
               <tr class="table-body-row">
                 <td class="product-remove">
-                  <a href="#"><i class="far fa-window-close"></i></a>
+                  <a href="{% url 'delete_cart_item' item.id %}">
+                    <i class="far fa-window-close" title="Remove"></i>
+                  </a>
                 </td>
                 <td class="product-image">
                   <img
-                    src="{% static 'customer/img/products/cookies_1.jpg' %}"
-                    alt=""
+                    src="{{ item.product.image.url }}"
+                    alt="{{ item.product.name }}"
                   />
                 </td>
-                <td class="product-name">Chocolate Chip</td>
-                <td class="product-price">$300</td>
+                <td class="product-name">{{ item.product.name }}</td>
+                <td class="product-price">${{ item.product.price }}</td>
                 <td class="product-quantity">
-                  <input type="number" value="2" />
+                  <form
+                    method="POST"
+                    action="{% url 'update_cart_quantity' item.id %}"
+                    class="common-form"
+                  >
+                    {% csrf_token %}
+                    <input
+                      type="number"
+                      name="quantity"
+                      value="{{ item.quantity }}"
+                      min="1"
+                      style="
+                        width: 70px;
+                        margin-right: 10px;
+                        margin-left: 10px;
+                        padding: 2px 5px !important;
+                      "
+                    />
+                    <button
+                      type="submit"
+                      class="custom-btn"
+                      style="
+                        height: min-content;
+                        padding: 3px 10px !important;
+                        border: none;
+                        border-radius: 50px;
+                      "
+                    >
+                      Update
+                    </button>
+                  </form>
                 </td>
-                <td class="product-total">$600</td>
+                <td class="product-total">{{ item.total_price }}</td>
               </tr>
-              <tr class="table-body-row">
-                <td class="product-remove">
-                  <a href="#"><i class="far fa-window-close"></i></a>
-                </td>
-                <td class="product-image">
-                  <img
-                    src="{% static 'customer/img/products/cookies_2.jpg' %}"
-                    alt=""
-                  />
-                </td>
-                <td class="product-name">Oatmeal Raisin</td>
-                <td class="product-price">$280</td>
-                <td class="product-quantity">
-                  <input type="number" value="1" />
-                </td>
-                <td class="product-total">$250</td>
-              </tr>
-              <!-- End placeholders -->
+              {% endfor %}
             </tbody>
           </table>
         </div>
@@ -86,26 +114,34 @@ Barrel{% endblock %} {% block content %}
             <tbody>
               <tr class="total-data">
                 <td><strong>Subtotal:</strong></td>
-                <td>$850</td>
+                <td>${{ subtotal|floatformat:2 }}</td>
               </tr>
               <tr class="total-data">
                 <td><strong>Shipping:</strong></td>
-                <td>$50</td>
+                <td>${{ shipping|floatformat:2 }}</td>
               </tr>
               <tr class="total-data">
                 <td><strong>Total:</strong></td>
-                <td>$900</td>
+                <td>${{ total|floatformat:2 }}</td>
               </tr>
             </tbody>
           </table>
           <div class="cart-buttons">
-            <a href="{% url 'cart' %}" class="boxed-btn">Update Cart</a>
+            <a href="{% url 'clear_cart' %}" class="boxed-btn">Clear Cart</a>
             <a href="{% url 'checkout' %}" class="boxed-btn black"
               >Proceed to Checkout</a
             >
           </div>
         </div>
       </div>
+      {% else %}
+      <div class="col-12 text-center p-5">
+        <h3 class="text-muted">🛒 Your cart is currently empty.</h3>
+        <a href="{% url 'products' %}" class="boxed-btn mt-3"
+          >Browse Products</a
+        >
+      </div>
+      {% endif %}
     </div>
   </div>
 </div>

@@ -20,6 +20,19 @@ Cookie Barrel{% endblock %} {% block content %}
   <div class="container">
     <div class="row">
       <div class="col-lg-8 mb-5 mb-lg-0 p-4 shadow-sm border rounded">
+        {% if messages %} {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+          {{ message }}
+          <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %} {% endif %}
         <div class="form-title">
           <h2>Have a Question?</h2>
           <p>Feel free to ask about products, orders, or anything else.</p>
@@ -28,7 +41,7 @@ Cookie Barrel{% endblock %} {% block content %}
         <div class="contact-form">
           <form
             method="POST"
-            action="#"
+            action="{% url 'contact' %}"
             id="cookies-contact-form"
             onSubmit="return valid_datas( this );"
           >
@@ -38,12 +51,14 @@ Cookie Barrel{% endblock %} {% block content %}
                 type="text"
                 placeholder="Your Name"
                 name="name"
+                value="{{ form_data.name|default_if_none:'' }}"
                 id="name"
               />
               <input
                 type="email"
                 placeholder="Your Email"
                 name="email"
+                value="{{ form_data.email|default_if_none:'' }}"
                 id="email"
               />
             </p>
@@ -52,12 +67,14 @@ Cookie Barrel{% endblock %} {% block content %}
                 type="tel"
                 placeholder="Phone Number"
                 name="phone"
+                value="{{ form_data.phone|default_if_none:'' }}"
                 id="phone"
               />
               <input
                 type="text"
                 placeholder="Subject"
                 name="subject"
+                value="{{ form_data.subject|default_if_none:'' }}"
                 id="subject"
               />
             </p>
@@ -68,7 +85,9 @@ Cookie Barrel{% endblock %} {% block content %}
                 cols="30"
                 rows="10"
                 placeholder="Your Message"
-              ></textarea>
+              >
+{{ form_data.message|default_if_none:'' }}</textarea
+              >
             </p>
             <p>
               <input

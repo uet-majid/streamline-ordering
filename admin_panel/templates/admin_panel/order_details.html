@@ -1,146 +1,250 @@
 {% extends 'admin_base.html' %} {% load static %} {% block title %}Order Details
-- Admin Panel{% endblock %} {% block content %}
-<!-- START PAGE CONTENT-->
-<div class="row common-form">
-  <div class="col-lg-8">
-    <div class="ibox">
-      <div class="ibox-head">
-        <div class="ibox-title">Order #12345 Details</div>
-        <div class="ibox-tools">
-          <a href="{% url 'orders' %}" class="btn btn-default btn-sm">
-            <i class="fa fa-arrow-left"></i> Back to Orders
-          </a>
+- Admin Panel{% endblock %} {% block content %} {% if messages %}
+<div class="d-flex justify-content-center mt-3">
+  <div style="min-width: 300px; max-width: 600px; width: 100%">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+      {{ message }}
+      <button
+        type="button"
+        class="close"
+        data-dismiss="alert"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+<div class="container-fluid mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>Order #{{ order.id }} Details</h3>
+    <a href="{% url 'orders' %}" class="btn btn-outline-primary">
+      <i class="fa fa-arrow-left"></i> Back to Orders
+    </a>
+  </div>
+
+  <div class="row">
+    <!-- Customer Info -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow">
+        <div class="card-header bg-info text-white">Customer Information</div>
+        <div class="card-body">
+          {% if order.customer %}
+          <p>
+            <strong>Name:</strong> {{ order.customer.name }}<br />
+            <strong>Phone:</strong> {{ order.customer.phone }}<br />
+            <strong>Email:</strong> {{ order.customer.email }}
+          </p>
+          {% else %}
+          <p>
+            <strong>Name:</strong> Walk-in Customer<br />
+            <strong>Phone:</strong> {{ order.billing_phone }}<br />
+            <strong>Email:</strong> N/A
+          </p>
+          {% endif %}
         </div>
       </div>
-      <div class="ibox-body">
-        <!-- Order Summary -->
-        <div class="row mb-4">
-          <div class="col-md-6">
-            <h5>Customer Information</h5>
-            <p>
-              <strong>Name:</strong> Majid Hussain<br />
-              <strong>Phone:</strong> +92 300 1234567<br />
-              <strong>Email:</strong> majid@example.com<br />
-              <strong>Shipping Address:</strong> UOL Lahore, Punjab, Pakistan
-            </p>
-          </div>
-          <div class="col-md-6">
-            <h5>Order Information</h5>
-            <p>
-              <strong>Order Date:</strong> 23 Apr 2025<br />
-              <strong>Order Status:</strong>
-              <span class="badge badge-warning">Pending</span><br />
-              <strong>Payment Status:</strong>
-              <span class="badge badge-success">Paid</span><br />
-              <strong>Payment Method:</strong> Credit Card<br />
-              <strong>WhatsApp Sent:</strong>
-              <i class="fa fa-check text-success"></i>
-            </p>
-          </div>
-        </div>
+    </div>
 
-        <!-- Order Items -->
-        <div class="table-responsive mb-4">
+    <!-- Order Info -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow">
+        <div class="card-header bg-green text-white">Order Information</div>
+        <div class="card-body">
+          <p>
+            <strong>Order Date & Time:</strong>
+            {{ order.order_date|date:"d M Y, h:i A"}}
+            <br />
+            <strong>Order Status:</strong>
+            {% if order.order_status == 'pending' %}
+            <span class="badge badge-warning">Pending</span>
+            {% elif order.order_status == 'delivered' %}
+            <span class="badge badge-success">Delivered</span>
+            {% else %}
+            <span class="badge badge-danger">Canceled</span>
+            {% endif %}
+            <br />
+            <strong>Payment:</strong>
+            {% if order.payment_status == 'cod' %}
+            <span class="badge badge-warning">Pending</span>
+            {% else %}
+            <span class="badge badge-success">Paid</span>
+            {% endif %} ({{ order.payment_method }})
+            <br />
+            <strong>WhatsApp Sent:</strong>
+            {% if order.whatsapp_sent %}
+            <i class="fa fa-check text-success"></i>
+            {% else %}
+            <i class="fa fa-times text-danger"></i>
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shipping Info -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow">
+        <div class="card-header bg-pink text-white">Shipping Information</div>
+        <div class="card-body">
+          {% if order.customer %}
+          <p>
+            <strong>Shipping Name:</strong>
+            {{ order.shipping_name }}
+            <br />
+            <strong>Shipping Phone:</strong>
+            {{ order.shipping_phone }}
+            <br />
+            <strong>Shipping City:</strong>
+            {{ order.shipping_city }}
+            <br />
+            <strong>Shipping Postal Code:</strong>
+            {{ order.shipping_postal_code }}
+            <br />
+            <strong>Shipping Address:</strong>
+            {{ order.shipping_address }}
+            <br />
+          </p>
+          {% else %}
+          <p><strong>Shipping:</strong> Collected at counter</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Billing Info -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow">
+        <div class="card-header bg-purple text-white">Billing Information</div>
+        <div class="card-body">
+          {% if order.customer %}
+          <p>
+            <strong>Billing Name:</strong>
+            {{ order.billing_name }}
+            <br />
+            <strong>Billing Phone:</strong>
+            {{ order.billing_phone }}
+            <br />
+            <strong>Billing Email:</strong>
+            {{ order.billing_email }}
+            <br />
+            <strong>Billing Address:</strong>
+            {{ order.billing_address }}
+            <br />
+          </p>
+          {% else %}
+          <p><strong>Billing:</strong> Collected at counter</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Order Items Table -->
+    <div class="col-lg-12">
+      <div class="card shadow">
+        <div class="card-header bg-teal text-white">Ordered Items</div>
+        <div class="card-body table-responsive">
           <table class="table table-bordered">
-            <thead>
+            <thead class="thead-light">
               <tr>
-                <th>#</th>
+                <th>Sr. No.</th>
                 <th>Product</th>
-                <th>Price</th>
+                <th>Unit Price</th>
                 <th>Quantity</th>
                 <th>Total</th>
               </tr>
             </thead>
             <tbody>
+              {% for item in order_items %}
               <tr>
-                <td>1</td>
+                <td>{{ forloop.counter }}</td>
                 <td>
                   <div class="d-flex align-items-center">
                     <img
-                      src="{% static 'admin/img/products/coffee.jpg' %}"
+                      src="{{ item.product.image.url }}"
                       width="50"
-                      class="img-thumbnail mr-3"
+                      class="img-thumbnail mr-2"
                     />
-                    <div>Premium Coffee</div>
+                    {{ item.product.name }}
                   </div>
                 </td>
-                <td>$4.99</td>
-                <td>2</td>
-                <td>$9.98</td>
+                <td>${{ item.product.price }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>${{ item.price }}</td>
               </tr>
-              <tr>
-                <td>2</td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <img
-                      src="{% static 'admin/img/products/bread.jpg' %}"
-                      width="50"
-                      class="img-thumbnail mr-3"
-                    />
-                    <div>Whole Wheat Bread</div>
-                  </div>
-                </td>
-                <td>$2.99</td>
-                <td>3</td>
-                <td>$8.97</td>
-              </tr>
+              {% endfor %}
             </tbody>
             <tfoot>
               <tr>
                 <th colspan="4" class="text-right">Subtotal:</th>
-                <th>$18.95</th>
+                <th>${{ subtotal }}</th>
               </tr>
               <tr>
                 <th colspan="4" class="text-right">Shipping:</th>
-                <th>$2.00</th>
+                <th>${{ shipping_cost }}</th>
               </tr>
               <tr>
                 <th colspan="4" class="text-right">Total:</th>
-                <th>$20.95</th>
+                <th><strong>${{ total }}</strong></th>
               </tr>
             </tfoot>
           </table>
         </div>
+      </div>
+    </div>
 
-        <!-- Order Actions -->
-        <div class="border-top pt-3 common-form">
+    <!-- Order Actions -->
+    <div class="col-lg-12 mt-4">
+      <div class="card shadow">
+        <div class="card-body text-center">
           <div class="btn-group">
-            <button class="btn btn-info">
-              <i class="fa fa-home"></i> Mark as Delivered
+            {% if order.order_status == 'pending' %}
+            <form
+              method="post"
+              action="{% url 'mark_order_delivered' order.id %}"
+              style="display: inline"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-info">
+                <i class="fa fa-home"></i>&nbsp;&nbsp;Mark as Delivered
+              </button>
+            </form>
+
+            <form
+              method="post"
+              action="{% url 'cancel_order' order.id %}"
+              style="display: inline"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">
+                <i class="fa fa-times"></i>&nbsp;&nbsp;Cancel Order
+              </button>
+            </form>
+            {% endif %}
+
+            <button class="btn btn-warning text-white">
+              <i class="fa fa-whatsapp"></i>&nbsp;&nbsp;Resend WhatsApp
             </button>
-            <button class="btn btn-danger">
-              <i class="fa fa-times"></i> Cancel Order
-            </button>
-            <button class="btn btn-warning">
-              <i class="fa fa-whatsapp"></i> Resend WhatsApp Notification
-            </button>
-            <button class="btn btn-secondary">
-              <i class="fa fa-print"></i> Print Invoice
-            </button>
+            <a
+              href="{% url 'print_invoice' order.id %}"
+              target="_blank"
+              class="btn btn-secondary"
+            >
+              <i class="fa fa-print"></i>&nbsp;&nbsp;Print Invoice
+            </a>
+            <a
+              href="{% url 'download_receipt' order.id %}"
+              class="btn btn-primary"
+              ><i class="fa fa-download"></i>&nbsp;&nbsp;Download Receipt
+              (PDF)</a
+            >
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<!-- END PAGE CONTENT-->
-{% endblock %} {% block page_scripts %}
-<script>
-  $(document).ready(function () {
-    // Status update buttons
-    $(".btn-info").click(function () {
-      if (confirm("Mark this order as delivered?")) {
-        alert(
-          "Order status would be updated to delivered (backend implementation needed)"
-        );
-      }
-    });
-
-    $(".btn-danger").click(function () {
-      if (confirm("Cancel this order?")) {
-        alert("Order would be canceled (backend implementation needed)");
-      }
-    });
-  });
-</script>
-{% endblock %}
+{% endblock %} {% block page_scripts %} {% endblock %}

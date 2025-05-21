@@ -69,40 +69,80 @@
               <!-- Menu -->
               <nav class="main-menu">
                 <ul>
-                  <li class="current-list-item">
+                  <li
+                    class="{% if request.path == '/' %}current-list-item{% endif %}"
+                  >
                     <a href="{% url 'home' %}">Home</a>
                   </li>
 
                   <!-- Categories Dropdown -->
-                  <li>
+                  <li
+                    class="{% if request.path|slice:":10" == '/category/' %}current-list-item{% endif %}"
+                  >
                     <a href="#">Categories</a>
                     <ul class="sub-menu">
+                      {% for cat in header_categories %}
                       <li>
-                        <a href="{% url 'category_products' %}">Cookies</a>
+                        <a href="{% url 'category_products' cat.id %}">
+                          {{ cat.name }}
+                        </a>
                       </li>
-                      <li>
-                        <a href="#">Brownies</a>
-                      </li>
-                      <li>
-                        <a href="#">Gift Boxes</a>
-                      </li>
+                      {% endfor %}
                     </ul>
                   </li>
+                  <!-- prettier-ignore -->
+                  <li
+                    class="{% if request.path == '/products/' or request.path|slice:":9" == '/product/' %}current-list-item{% endif %}"
+                  >
 
-                  <li><a href="{% url 'products' %}">Products</a></li>
-                  <li><a href="{% url 'contact' %}">Contact Us</a></li>
-                  <li><a href="{% url 'about' %}">About Us</a></li>
-                  <li><a href="{% url 'my_orders' %}">My Orders</a></li>
-                  <!-- <li><a href="#">Logout</a></li> -->
-                  <li><a href="{% url 'login' %}">Login</a></li>
-                  <li><a href="{% url 'signup' %}">Register</a></li>
-                  <li><a href="{% url 'profile' %}">My Profile</a></li>
-
+                    <a href="{% url 'products' %}">Products</a>
+                  </li>
+                  <li
+                    class="{% if request.path == '/contact/' %}current-list-item{% endif %}"
+                  >
+                    <a href="{% url 'contact' %}">Contact Us</a>
+                  </li>
+                  <li
+                    class="{% if request.path == '/about/' %}current-list-item{% endif %}"
+                  >
+                    <a href="{% url 'about' %}">About Us</a>
+                  </li>
+                  {% if request.session.customer_id %}
+                  <li
+                    class="{% if request.path == '/my-orders/' %}current-list-item{% endif %}"
+                  >
+                    <a href="{% url 'my_orders' %}">My Orders</a>
+                  </li>
+                  <li
+                    class="{% if request.path == '/profile/' %}current-list-item{% endif %}"
+                  >
+                    <a href="{% url 'profile' %}">My Profile</a>
+                  </li>
+                  <li><a href="{% url 'logout' %}">Logout</a></li>
+                  {% else %}
+                  <li
+                    class="{% if request.path == '/login/' %}current-list-item{% endif %}"
+                  >
+                    <a href="{% url 'login' %}">Login</a>
+                  </li>
+                  <li
+                    class="{% if request.path == '/signup/' %}current-list-item{% endif %}"
+                  >
+                    <a href="{% url 'signup' %}">Register</a>
+                  </li>
+                  {% endif %}
                   <li>
                     <div class="header-icons">
-                      <a class="shopping-cart" href="{% url 'cart' %}"
-                        ><i class="fas fa-shopping-cart"></i
-                      ></a>
+                      {% if request.session.customer_id %}
+                      <a class="shopping-cart" href="{% url 'cart' %}">
+                        <i class="fas fa-shopping-cart" style="{% if request.path == '/cart/' %}color: #f28123;{% endif %}"></i>
+                        {% if cart_count > 0 %}
+                        <span class="badge badge-danger" style="font-size: 10px; position: relative; top: -10px; left: -5px;">
+                          {{ cart_count }}
+                        </span>
+                        {% endif %}
+                      </a>
+                      {% endif %}
                       <a class="mobile-hide search-bar-icon" href="#"
                         ><i class="fas fa-search"></i
                       ></a>
@@ -129,18 +169,21 @@
           <div class="col-lg-12">
             <span class="close-btn"><i class="fas fa-window-close"></i></span>
             <div class="search-bar">
-              <div class="search-bar-tablecell">
-                <h3>Search For:</h3>
-                <input type="text" placeholder="Keywords" />
-                <button type="submit">
-                  Search <i class="fas fa-search"></i>
-                </button>
+              <div class="search-bar-tablecell d-flex flex-column align-items-center justify-content-center" style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <form method="GET" action="{% url 'search_results' %}" class="w-100 text-center">
+                  <h3>Search For:</h3>
+                  <input type="text" name="q" placeholder="Keywords" required />
+                  <button type="submit">
+                    Search <i class="fas fa-search"></i>
+                  </button>
+                </form>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
 
     <!-- PAGE CONTENT START -->
     {% block content %} {% endblock %}
@@ -176,7 +219,9 @@
               <ul>
                 <li><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'products' %}">Products</a></li>
+                {% if request.session.customer_id %}
                 <li><a href="{% url 'cart' %}">Cart</a></li>
+                {% endif %}
                 <li><a href="{% url 'about' %}">About Us</a></li>
                 <li><a href="{% url 'contact' %}">Contact Us</a></li>
               </ul>
@@ -226,6 +271,7 @@
     <script src="{% static 'customer/js/sticker.js' %}"></script>
     <script src="{% static 'customer/js/form-validate.js' %}"></script>
     <script src="{% static 'customer/js/main.js' %}"></script>
+    <script src="{% static 'admin/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <script>
       $(document).ready(function () {
         $("input[name='payment_method']").on("change", function () {
@@ -236,6 +282,15 @@
           }
         });
       });
+
+      // Auto-dismiss alerts after 4 seconds
+      // setTimeout(function () {
+      //   const alerts = document.querySelectorAll(".alert");
+      //   alerts.forEach(function (alert) {
+      //     const bsAlert = bootstrap.Alert.getOrCreateInstance(alert);
+      //     bsAlert.close();
+      //   });
+      // }, 4000);
     </script>
   </body>
 </html>

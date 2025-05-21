@@ -20,12 +20,41 @@ Cookie Barrel{% endblock %} {% block content %}
   <div class="container">
     <div class="row">
       <div class="col-md-12">
+        {% if messages %} {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} col-lg-6 offset-lg-3">
+          {{ message }}
+          <button
+            type="button"
+            class="close"
+            data-dismiss="alert"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %} {% endif %}
         <div class="product-filters">
           <ul>
-            <li class="active" data-filter="*">All</li>
-            <li data-filter=".cookies">Cookies</li>
-            <li data-filter=".brownies">Brownies</li>
-            <li data-filter=".giftbox">Gift Boxes</li>
+            <a
+              href="{% url 'products' %}"
+              style="color: {% if selected_category == cat.name %}white{% else %}black{% endif %};"
+            >
+              <li class="{% if not selected_category %}active{% endif %}">
+                All
+              </li>
+            </a>
+            {% for cat in categories %}
+            <a
+              href="{% url 'products' %}?category={{ cat.name }}"
+              style="color: {% if selected_category == cat.name %}white{% else %}black{% endif %};"
+            >
+              <li
+                class="{% if selected_category == cat.name %}active{% endif %}"
+              >
+                {{ cat.name }}
+              </li>
+            </a>
+            {% endfor %}
           </ul>
         </div>
       </div>
@@ -33,107 +62,28 @@ Cookie Barrel{% endblock %} {% block content %}
 
     <!-- product items -->
     <div class="row product-lists">
-      <!-- Cookies -->
-      <div class="col-lg-4 col-md-6 text-center cookies">
+      {% for product in products %}
+      <div
+        class="col-lg-4 col-md-6 text-center {{ product.category.name|lower|slugify }}"
+      >
         <div class="single-product-item">
-          <div class="product-image">
-            <a href="{% url 'product_details' %}"
-              ><img
-                src="{% static 'customer/img/products/cookies_1.jpg' %}"
-                alt=""
-            /></a>
-          </div>
-          <h3>Chocolate Chip Cookies</h3>
-          <p class="product-price"><span>Per Box</span> $300</p>
-          <a href="{% url 'cart' %}" class="cart-btn"
+          <a href="{% url 'product_details' product.id %}">
+            <div class="product-image">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" />
+            </div>
+            <h3>{{ product.name }}</h3>
+            <p class="product-price">${{ product.price }}</p>
+          </a>
+          <a href="{% url 'quick_add_to_cart' product.id %}" class="cart-btn"
             ><i class="fas fa-shopping-cart"></i> Add to Cart</a
           >
         </div>
       </div>
-      <div class="col-lg-4 col-md-6 text-center cookies">
-        <div class="single-product-item">
-          <div class="product-image">
-            <a href="{% url 'product_details' %}"
-              ><img
-                src="{% static 'customer/img/products/cookies_2.jpg' %}"
-                alt=""
-            /></a>
-          </div>
-          <h3>Oatmeal Raisin Cookies</h3>
-          <p class="product-price"><span>Per Box</span> $280</p>
-          <a href="{% url 'cart' %}" class="cart-btn"
-            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
-          >
-        </div>
+      {% empty %}
+      <div class="col-12 text-center">
+        <p>No products available at the moment.</p>
       </div>
-
-      <!-- Brownies -->
-      <div class="col-lg-4 col-md-6 text-center brownies">
-        <div class="single-product-item">
-          <div class="product-image">
-            <a href="{% url 'product_details' %}"
-              ><img
-                src="{% static 'customer/img/products/brownies_1.jpg' %}"
-                alt=""
-            /></a>
-          </div>
-          <h3>Fudge Brownie</h3>
-          <p class="product-price"><span>Per Slice</span> $150</p>
-          <a href="{% url 'cart' %}" class="cart-btn"
-            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
-          >
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6 text-center brownies">
-        <div class="single-product-item">
-          <div class="product-image">
-            <a href="{% url 'product_details' %}"
-              ><img
-                src="{% static 'customer/img/products/brownies_2.jpg' %}"
-                alt=""
-            /></a>
-          </div>
-          <h3>Walnut Brownie</h3>
-          <p class="product-price"><span>Per Slice</span> $170</p>
-          <a href="{% url 'cart' %}" class="cart-btn"
-            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
-          >
-        </div>
-      </div>
-
-      <!-- Gift Boxes -->
-      <div class="col-lg-4 col-md-6 text-center giftbox">
-        <div class="single-product-item">
-          <div class="product-image">
-            <a href="{% url 'product_details' %}"
-              ><img
-                src="{% static 'customer/img/products/gift-box-1.jpg' %}"
-                alt=""
-            /></a>
-          </div>
-          <h3>Mini Cookie Gift Box</h3>
-          <p class="product-price"><span>Per Box</span> $550</p>
-          <a href="{% url 'cart' %}" class="cart-btn"
-            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
-          >
-        </div>
-      </div>
-      <div class="col-lg-4 col-md-6 text-center giftbox">
-        <div class="single-product-item">
-          <div class="product-image">
-            <a href="{% url 'product_details' %}"
-              ><img
-                src="{% static 'customer/img/products/gift-box-2.jpg' %}"
-                alt=""
-            /></a>
-          </div>
-          <h3>Deluxe Cookie Box</h3>
-          <p class="product-price"><span>Per Box</span> $950</p>
-          <a href="{% url 'cart' %}" class="cart-btn"
-            ><i class="fas fa-shopping-cart"></i> Add to Cart</a
-          >
-        </div>
-      </div>
+      {% endfor %}
     </div>
 
     <!-- pagination -->
@@ -141,11 +91,33 @@ Cookie Barrel{% endblock %} {% block content %}
       <div class="col-lg-12 text-center">
         <div class="pagination-wrap">
           <ul>
-            <li><a href="#">Prev</a></li>
-            <li><a href="#">1</a></li>
-            <li><a class="active" href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">Next</a></li>
+            {% if products.has_previous %}
+            <li>
+              <a
+                href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ products.previous_page_number }}"
+                >Prev</a
+              >
+            </li>
+            {% endif %}
+            <!-- prettier-ignore -->
+            {% for num in products.paginator.page_range %} 
+            {% if products.number == num %}
+            <li><a class="active" href="#">{{ num }}</a></li>
+            {% else %}
+            <li>
+              <a
+                href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ num }}"
+                >{{ num }}</a
+              >
+            </li>
+            {% endif %} {% endfor %} {% if products.has_next %}
+            <li>
+              <a
+                href="?{% if selected_category %}category={{ selected_category }}&{% endif %}page={{ products.next_page_number }}"
+                >Next</a
+              >
+            </li>
+            {% endif %}
           </ul>
         </div>
       </div>

@@ -13,120 +13,73 @@
         <div class="ibox-title">Edit Product</div>
       </div>
       <div class="ibox-body">
-        <form
-          class="form-horizontal"
-          id="edit-product-form"
-          enctype="multipart/form-data"
-        >
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Name</label>
-            <div class="col-sm-10">
-              <input
-                class="form-control"
-                type="text"
-                name="name"
-                value="Premium Coffee"
-                placeholder="Product name"
-                required
-              />
-            </div>
-          </div>
+        <form method="POST" enctype="multipart/form-data" class="form-horizontal" id="edit-product-form">
+  {% csrf_token %}
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label">Name</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="text" name="name" value="{{ product.name }}" required />
+    </div>
+  </div>
 
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Description</label>
-            <div class="col-sm-10">
-              <textarea
-                class="form-control"
-                name="description"
-                placeholder="Product description"
-                rows="3"
-                required
-              >
-Finest arabica coffee beans roasted to perfection</textarea
-              >
-            </div>
-          </div>
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label">Description</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" name="description" rows="3" required>{{ product.description }}</textarea>
+    </div>
+  </div>
 
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Price</label>
-            <div class="col-sm-10">
-              <input
-                class="form-control"
-                type="number"
-                name="price"
-                value="499"
-                placeholder="00"
-                step="1"
-                min="0"
-                required
-              />
-            </div>
-          </div>
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label">Price</label>
+    <div class="col-sm-10">
+      <input class="form-control" type="number" name="price" value="{{ product.price }}" min="1" required />
+    </div>
+  </div>
 
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Category</label>
-            <div class="col-sm-10">
-              <select
-                class="form-control select2_demo_2"
-                name="category"
-                required
-              >
-                <option></option>
-                <option value="1">Bakery Items</option>
-                <option value="2" selected>Beverages</option>
-                <option value="3">Snacks</option>
-              </select>
-            </div>
-          </div>
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label">Category</label>
+    <div class="col-sm-10">
+      <select class="form-control select2_demo_2" name="category" required>
+        <option value="">Select Category</option>
+        {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if product.category.id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
 
-          <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Current Image</label>
-            <div class="col-sm-10">
-              <img
-                src="{% static 'admin/img/products/coffee.jpg' %}"
-                width="100"
-                class="img-thumbnail mb-2"
-              />
-              <input
-                type="file"
-                class="form-control"
-                name="image"
-                accept="image/*"
-              />
-              <small class="form-text text-muted"
-                >Leave blank to keep current image</small
-              >
-            </div>
-          </div>
+  <div class="form-group row">
+    <label class="col-sm-2 col-form-label">Current Image</label>
+    <div class="col-sm-10">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" width="100" class="img-thumbnail mb-2" />
+      {% endif %}
+      <input type="file" class="form-control" name="image" accept="image/*" />
+      <small class="form-text text-muted">Leave blank to keep current image</small>
+    </div>
+  </div>
 
-          <div class="form-group row">
-            <div class="col-sm-10 ml-sm-auto">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  name="is_active"
-                  id="is_active"
-                  checked
-                />
-                <label class="form-check-label" for="is_active">
-                  Active Product
-                </label>
-              </div>
-            </div>
-          </div>
+  <div class="form-group row">
+    <div class="col-sm-10 ml-sm-auto">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="is_active" id="is_active" {% if product.is_active %}checked{% endif %} />
+        <label class="form-check-label" for="is_active">Active Product</label>
+      </div>
+    </div>
+  </div>
 
-          <div class="form-group row">
-            <div class="col-sm-10 ml-sm-auto">
-              <button class="btn btn-primary" type="submit">
-                <i class="fa fa-save"></i>&nbsp;&nbsp;Update Product
-              </button>
-              <a href="{% url 'admin-products' %}" class="btn btn-default">
-                <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Cancel
-              </a>
-            </div>
-          </div>
-        </form>
+  <div class="form-group row">
+    <div class="col-sm-10 ml-sm-auto">
+      <button class="btn btn-primary" type="submit">
+        <i class="fa fa-save"></i>&nbsp;&nbsp;Update Product
+      </button>
+      <a href="{% url 'admin-products' %}" class="btn btn-default">
+        <i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Cancel
+      </a>
+    </div>
+  </div>
+</form>
+
       </div>
     </div>
   </div>
