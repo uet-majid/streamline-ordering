@@ -315,7 +315,49 @@ def _create_order(customer_id, form_data, payment_method, payment_status):
             price=Decimal(item.product.price)
         )
 
+    send_order_confirmation_email(order)
+
     cart_items.delete()
+
+def send_order_confirmation_email(order):
+    order_items = OrderItem.objects.filter(order=order)
+
+    # Build email body
+    message = f"Dear {order.billing_name},\n\n"
+    message += f"Thank you for your order #{order.id}\n\n"
+    message += "Here are your order details:\n"
+    message += "----------------------------------------\n"
+
+    total = 0
+    for item in order_items:
+        subtotal = item.quantity * item.price
+        message += f"{item.product.name} - Qty: {item.quantity} x ${item.price:.2f} = ${subtotal:.2f}\n"
+        total += subtotal
+
+    shipping = Decimal('0.00') if total == 0 or total >= 75 else Decimal('50.00')
+    final_total = total + shipping
+
+    message += "----------------------------------------\n"
+    message += f"Subtotal: ${total:.2f}\n"
+    message += f"Shipping: ${shipping:.2f}\n"
+    message += f"Total: ${final_total:.2f}\n\n"
+
+    message += "Shipping To:\n"
+    message += f"{order.shipping_name}\n"
+    message += f"{order.shipping_address}, {order.shipping_city} - {order.shipping_postal_code}\n"
+    message += f"Phone: {order.shipping_phone}\n\n"
+
+    message += "We'll notify you when your order is on the way!\n"
+    message += "\nThank you,\nThe Cookie Barrel Team"
+
+    # Send the email
+    send_mail(
+        subject=f"Order Confirmation - Order #{order.id}",
+        message=message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[order.billing_email],
+        fail_silently=False,
+    )
 
 def contact(request):
     if request.method == 'POST':
