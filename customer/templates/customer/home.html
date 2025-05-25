@@ -135,6 +135,7 @@
               <img src="{{ product.image.url }}" alt="{{ product.name }}" />
             </div>
             <h3>{{ product.name }}</h3>
+            <p>{{ product.description }}</p>
             <p class="product-price">${{ product.price }}</p>
           </a>
           <a href="{% url 'quick_add_to_cart' product.id %}" class="cart-btn"
@@ -205,6 +206,7 @@
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" />
               </div>
               <h3>{{ product.name }}</h3>
+              <p>{{ product.description }}</p>
               <p class="product-price">${{ product.price }}</p>
             </a>
             <a href="{% url 'quick_add_to_cart' product.id %}" class="cart-btn"

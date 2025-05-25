@@ -139,3 +139,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'majid.3051005@gmail.com'
 EMAIL_HOST_PASSWORD = 'zhji setq trcm ntnk'
+

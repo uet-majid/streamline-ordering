@@ -47,8 +47,6 @@ Cookie Barrel{% endblock %} {% block content %}
               <strong>Payment Status:</strong>
               {% if order.payment_status == 'paid' %}
               <span class="badge badge-success">Paid</span>
-              {% elif order.payment_method == 'cod' %}
-              <span class="badge badge-info">COD</span>
               {% else %}
               <span class="badge badge-warning">Unpaid</span>
               {% endif %}

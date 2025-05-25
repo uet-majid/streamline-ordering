@@ -16,6 +16,11 @@ from django.db.models.functions import TruncDay, TruncWeek, TruncMonth, TruncYea
 from io import BytesIO
 from django.contrib.auth.hashers import check_password, make_password
 from .decorators import admin_login_required, superadmin_required
+from twilio.rest import Client
+from twilio.base.exceptions import TwilioRestException
+import phonenumbers
+import urllib.parse
+from django.db.models import Prefetch
 
 def admin_login(request):
     if request.session.get('admin_id'):
@@ -170,16 +175,20 @@ def admin_home(request):
     total_customers = Customer.objects.count()
 
     # Latest orders (limit 20)
-    latest_orders_raw = Order.objects.order_by('-order_date')[:20]
+    latest_orders_raw = Order.objects.order_by('-id')[:20] 
     latest_orders = []
     for order in latest_orders_raw:
         total = order.orderitem_set.aggregate(total=Sum('price'))['total'] or 0
-        shipping = Decimal('0.00') if total == 0 or total > 75 else Decimal('50.00')
+        if order.customer:
+            shipping = Decimal('0.00') if total == 0 or total >= 75 else Decimal('50.00')
+        else:
+            shipping = 0
         total = total + shipping
         latest_orders.append({
             'order': order,
             'total': total
         })
+    
 
     context = {
         'new_orders': new_orders,
@@ -277,7 +286,6 @@ def add_product(request):
 
         try:
             category = get_object_or_404(Category, id=category_id)
-            print("In try")
             Product.objects.create(
                 name=name,
                 description=description,
@@ -290,7 +298,6 @@ def add_product(request):
             return redirect('admin-products')
 
         except Exception as e:
-            print("In exception")
             messages.error(request, f"Something went wrong: {str(e)}")
     
     return render(request, 'admin_panel/add_product.html', {'categories': categories})
@@ -385,7 +392,10 @@ def orders(request):
     orders = []
     for order in orders_raw:
         total = order.orderitem_set.aggregate(total=Sum('price'))['total'] or 0
-        shipping = Decimal('0.00') if total == 0 or total > 75 else Decimal('50.00')
+        if order.customer:
+            shipping = Decimal('0.00') if total == 0 or total >= 75 else Decimal('50.00')
+        else:
+            shipping = 0
         total = total + shipping
         orders.append({
             'order': order,
@@ -399,12 +409,15 @@ def order_details(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     order_items = order.orderitem_set.select_related('product').all()
 
+    subtotal = sum(item.price for item in order_items)
+    if order.customer:
+        shipping_cost = Decimal('0.00') if subtotal == 0 or subtotal >= 75 else Decimal('50.00')
+    else:
+        shipping_cost = 0
+    total = subtotal + shipping_cost
+
     # Determine if it's a walk-in customer
     is_walkin = order.customer is None
-
-    subtotal = sum(item.price for item in order_items)
-    shipping_cost = Decimal('0.00') if subtotal > 75 else Decimal('50.00')
-    total = subtotal + shipping_cost
 
     context = {
         'order': order,
@@ -450,7 +463,6 @@ def create_order(request):
                 payment_method=payment_method,
                 payment_status='paid',
                 order_status='pending',
-                whatsapp_sent='True',
                 billing_phone=phone_number
             )
 
@@ -482,6 +494,7 @@ def mark_order_delivered(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     if order.order_status == 'pending':
         order.order_status = 'delivered'
+        order.payment_status = 'paid'
         order.save()
         messages.success(request, f"Order #{order.id} marked as delivered.")
     return redirect('order_details', order_id=order.id)
@@ -495,6 +508,64 @@ def cancel_order(request, order_id):
         messages.success(request, f"Order #{order.id} has been cancelled.")
     return redirect('order_details', order_id=order.id)
 
+def resend_whatsapp(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    if request.method == 'POST':
+        twilio_client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+        customer_number = order.shipping_phone.strip() if order.shipping_phone else ''
+        
+        if customer_number:
+            try:
+                parsed_number = phonenumbers.parse(customer_number, None)
+                if phonenumbers.is_valid_number(parsed_number):
+                    customer_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+                    customer_whatsapp_message = resend_whatsapp_customer_message(order)
+                    twilio_client.messages.create(
+                        body=urllib.parse.unquote(customer_whatsapp_message),
+                        from_=settings.TWILIO_WHATSAPP_NUMBER,
+                        to=f"whatsapp:{customer_number}"
+                    )
+                    order.whatsapp_sent = True
+                    order.save()
+                    messages.success(request, f"WhatsApp message resent successfully to {customer_number}.")
+                else:
+                    messages.error(request, "Invalid customer phone number.")
+            except TwilioRestException as e:
+                if e.code == 30003:
+                    messages.error(request, "Customer phone number is not registered with WhatsApp or is unreachable.")
+                else:
+                    messages.error(request, f"Failed to resend WhatsApp message: {str(e)}")
+            except phonenumbers.NumberParseException as e:
+                messages.error(request, "Failed to parse customer phone number.")
+        else:
+            messages.error(request, "No customer phone number provided.")
+        
+        return redirect('order_details', order_id=order.id)
+    return redirect('order_details', order_id=order.id)
+
+def resend_whatsapp_customer_message(order):
+    order_items = OrderItem.objects.filter(order=order)
+    message = f"🎉 Thank you for your order #{order.id}, {order.shipping_name}!\n\n"
+    message += "Your order details:\n"
+
+    total = 0
+    for item in order_items:
+        subtotal = item.quantity * item.price
+        message += f"- {item.product.name} x {item.quantity} = ${subtotal:.2f}\n"
+        total += subtotal
+
+    
+    shipping = Decimal('0.00') if total == 0 or total >= 75 else Decimal('50.00')
+    final_total = total + shipping
+
+    message += f"Subtotal: ${total:.2f}\n"
+    message += f"Shipping: ${shipping:.2f}\n"
+    message += f"Total: ${final_total:.2f}\n\n"
+    message += f"Shipping to: {order.shipping_address}, {order.shipping_city}, {order.shipping_postal_code}\n\n"
+    message += "Thank you,\nThe Cookie Barrel Team"
+
+    return urllib.parse.quote(message)
+
 @admin_login_required
 def print_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -504,8 +575,10 @@ def print_invoice(request, order_id):
     subtotal = sum(item.price for item in order_items)
 
     # Determine shipping cost
-    shipping_cost = 0 if subtotal > 75 else 50
-
+    if order.customer:
+        shipping_cost = 0 if subtotal >= 75 else 50
+    else:
+        shipping_cost = 0
     total = subtotal + shipping_cost
 
     context = {
@@ -524,7 +597,10 @@ def download_receipt_pdf(request, order_id):
 
     subtotal = sum(item.price for item in order_items)
 
-    shipping_cost = 0 if subtotal > 75 else 50
+    if order.customer:
+        shipping_cost = 0 if subtotal >= 75 else 50
+    else:
+        shipping_cost = 0
 
     total = subtotal + shipping_cost
 

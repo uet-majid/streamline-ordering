@@ -12,7 +12,9 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.db.models import Q
 from decimal import Decimal
 import stripe
-from django.utils import timezone
+import urllib.parse
+from twilio.rest import Client
+import phonenumbers
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -317,7 +319,109 @@ def _create_order(customer_id, form_data, payment_method, payment_status):
 
     send_order_confirmation_email(order)
 
+    # Initialize Twilio client
+    twilio_client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+
+    # Send WhatsApp message to admin
+    admin_whatsapp_message = generate_whatsapp_admin_message(order)
+    admin_number = settings.ADMIN_WHATSAPP_NUMBER
+    try:
+        twilio_client.messages.create(
+            body=urllib.parse.unquote(admin_whatsapp_message),
+            from_=settings.TWILIO_WHATSAPP_NUMBER,
+            to=f"whatsapp:{admin_number}"
+        )
+    except Exception as e:
+        print(f"Failed to send admin WhatsApp message to {admin_number}: {str(e)}")
+
+    # Send WhatsApp message to customer
+    customer_number = form_data.get('shipping_phone', '').strip()
+    try:
+        parsed_number = phonenumbers.parse(customer_number, None)
+        if phonenumbers.is_valid_number(parsed_number):
+            customer_number = phonenumbers.format_number(parsed_number, phonenumbers.PhoneNumberFormat.E164)
+            customer_whatsapp_message = generate_whatsapp_customer_message(order)
+            twilio_client.messages.create(
+                body=urllib.parse.unquote(customer_whatsapp_message),
+                from_=settings.TWILIO_WHATSAPP_NUMBER,
+                to=f"whatsapp:{customer_number}"
+            )
+            # Update whatsapp_sent to True
+            order.whatsapp_sent = True
+            order.save()
+        else:
+            print(f"Invalid customer phone number: {customer_number}")
+    except phonenumbers.NumberParseException as e:
+        print(f"Failed to parse customer phone number {customer_number}: {str(e)}")
+
     cart_items.delete()
+
+def generate_whatsapp_admin_message(order):
+    order_items = OrderItem.objects.filter(order=order)
+    message = f"📦 *New Order Received!* (Order #{order.id})\n\n"
+
+    for item in order_items:
+        subtotal = item.quantity * item.price
+        message += f"- {item.product.name} x {item.quantity} = ${subtotal:.2f}\n"
+
+    total = sum(item.quantity * item.price for item in order_items)
+    shipping = 0 if total >= 75 else 50
+    final_total = total + shipping
+
+    message += f"\nSubtotal: ${total:.2f}"
+    message += f"\nShipping: ${shipping:.2f}"
+    message += f"\n\n*Total: ${final_total:.2f}*\n"
+    message += "\n🧾 *Billing Info:*\n"
+    message += f"Name: {order.billing_name}\nEmail: {order.billing_email}\nPhone #: {order.billing_phone}\nAddress: {order.billing_address}\n"
+    message += "\n🚚 *Shipping Info:*\n"
+    message += f"Name: {order.shipping_name}\nPhone: {order.shipping_phone}\nAddress: {order.shipping_address}, {order.shipping_city}, {order.shipping_postal_code}"
+
+    return urllib.parse.quote(message)
+
+def generate_whatsapp_customer_message(order):
+    order_items = OrderItem.objects.filter(order=order)
+    message = f"🎉 Thank you for your order #{order.id}, {order.shipping_name}!\n\n"
+    message += "Your order details:\n"
+
+    total = 0
+    for item in order_items:
+        subtotal = item.quantity * item.price
+        message += f"- {item.product.name} x {item.quantity} = ${subtotal:.2f}\n"
+        total += subtotal
+
+    shipping = Decimal('0.00') if total == 0 or total >= 75 else Decimal('50.00')
+    final_total = total + shipping
+
+    message += f"Subtotal: ${total:.2f}\n"
+    message += f"Shipping: ${shipping:.2f}\n"
+    message += f"Total: ${final_total:.2f}\n\n"
+    message += f"Shipping to: {order.shipping_address}, {order.shipping_city}, {order.shipping_postal_code}\n\n"
+    message += "Thank you,\nThe Cookie Barrel Team"
+
+    return urllib.parse.quote(message)
+
+def get_whatsapp_link(request):
+    customer_id = request.session.get("customer_id")
+    customer = Customer.objects.get(id=customer_id)
+    cart_items = Cart.objects.filter(customer=customer).select_related('product')
+
+    message = f"Hello, I want to place an order:\n\n"
+    total = 0
+
+    for item in cart_items:
+        subtotal = item.product.price * item.quantity
+        total += subtotal
+        message += f"- {item.product.name} x {item.quantity} = ${subtotal:.2f}\n"
+
+    message += f"\nTotal: ${total:.2f}\n"
+    message += f"\nMy name: {customer.name}\nPhone: {customer.phone}\nAddress: {customer.address}\n"
+
+    number = settings.ADMIN_WHATSAPP_NUMBER
+    encoded_message = urllib.parse.quote(message)
+
+    whatsapp_link = f"https://wa.me/{number}/?text={encoded_message}"
+
+    return redirect(whatsapp_link)
 
 def send_order_confirmation_email(order):
     order_items = OrderItem.objects.filter(order=order)

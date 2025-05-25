@@ -32,6 +32,7 @@ urlpatterns = [
     path('orders/cancelled/<int:order_id>/', views.cancel_order, name='cancel_order'),
     path('orders/invoice/<int:order_id>/', views.print_invoice, name='print_invoice'),
     path('orders/download_receipt/<int:order_id>/', views.download_receipt_pdf, name='download_receipt'),
+    path('orders/<int:order_id>/resend-whatsapp/', views.resend_whatsapp, name='resend_whatsapp'),
     
     path('reports', views.reports, name='reports'),
     path('reports/download-pdf/', views.download_report_pdf, name='download_report_pdf'),

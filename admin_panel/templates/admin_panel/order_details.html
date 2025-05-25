@@ -68,8 +68,8 @@
             {% endif %}
             <br />
             <strong>Payment:</strong>
-            {% if order.payment_method == 'cod' %}
-            <span class="badge badge-warning">Pending</span>
+            {% if order.payment_status == 'unpaid' %}
+            <span class="badge badge-warning">Unpaid</span>
             {% else %}
             <span class="badge badge-success">Paid</span>
             {% endif %} ({{ order.payment_method }})
@@ -223,11 +223,19 @@
                 <i class="fa fa-times"></i>&nbsp;&nbsp;Cancel Order
               </button>
             </form>
+            {% endif %} {% if order.customer %}
+            <form
+              method="post"
+              action="{% url 'resend_whatsapp' order.id %}"
+              style="display: inline"
+            >
+              {% csrf_token %}
+              <button type="submit" class="btn btn-warning text-white">
+                <i class="fa fa-whatsapp"></i>&nbsp;&nbsp;Resend WhatsApp
+              </button>
+            </form>
             {% endif %}
 
-            <button class="btn btn-warning text-white">
-              <i class="fa fa-whatsapp"></i>&nbsp;&nbsp;Resend WhatsApp
-            </button>
             <a
               href="{% url 'print_invoice' order.id %}"
               target="_blank"

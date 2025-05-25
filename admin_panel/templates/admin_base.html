@@ -268,6 +268,12 @@
         });
       });
 
+      $(function () {
+        $("#order-table").DataTable({
+          order: [[0, "desc"]],
+        });
+      });
+
       // Auto-dismiss alerts after 4 seconds
       setTimeout(function () {
         const alerts = document.querySelectorAll(".alert");
@@ -277,6 +283,7 @@
         });
       }, 4000);
     </script>
+
     {% block page_scripts %}{% endblock %}
   </body>
 </html>

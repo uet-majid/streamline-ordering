@@ -55,8 +55,6 @@ Cookie Barrel{% endblock %} {% block content %}
               <td>
                 {% if item.order.payment_status == 'paid' %}
                 <span class="badge badge-success">Paid</span>
-                {% elif item.order.payment_method == 'cod' %}
-                <span class="badge badge-info">COD</span>
                 {% else %}
                 <span class="badge badge-warning">Unpaid</span>
                 {% endif %}
@@ -70,7 +68,7 @@ Cookie Barrel{% endblock %} {% block content %}
                 <span class="badge badge-danger">Canceled</span>
                 {% endif %}
               </td>
-              <td>${{ item.total }}</td>
+              <td>${{ item.total|floatformat:2 }}</td>
               <td>
                 <a
                   href="{% url 'order_details_customer' item.order.id %}"

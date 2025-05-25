@@ -158,12 +158,17 @@ Cookie Barrel{% endblock %} {% block content %}
                       </p>
                       <p>
                         <input
-                          type="text"
+                          type="tel"
                           name="shipping_phone"
-                          placeholder="Contact Number"
+                          placeholder="Enter phone number with country code (e.g., +1234567890)"
                           value="{{ previous_data.shipping_phone }}"
                           required
                         />
+
+                        <small
+                          >WhatsApp notifications require a WhatsApp-registered
+                          number.</small
+                        >
                       </p>
                     </div>
                   </div>
@@ -203,8 +208,15 @@ Cookie Barrel{% endblock %} {% block content %}
                 class="custom-btn"
                 style="border: none; border-radius: 50px"
               >
-                Place Order
-              </button>
+                Place Order</button
+              >&nbsp;&nbsp;&nbsp;
+              <a
+                href="{% url 'order_via_whatsapp' %}"
+                target="_blank"
+                class="boxed-btn black"
+              >
+                Order via WhatsApp
+              </a>
             </div>
           </form>
         </div>

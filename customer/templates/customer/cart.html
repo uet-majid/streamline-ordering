@@ -132,6 +132,15 @@ Barrel{% endblock %} {% block content %}
               >Proceed to Checkout</a
             >
           </div>
+          <div class="cart-buttons text-center">
+            <a
+              href="{% url 'order_via_whatsapp' %}"
+              target="_blank"
+              class="boxed-btn black"
+            >
+              Order via WhatsApp
+            </a>
+          </div>
         </div>
       </div>
       {% else %}
